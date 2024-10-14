@@ -21,10 +21,10 @@ jobs:
 
       - name: Build and push FE image
         run: |
-          docker build -t your-dockerhub-username/my-mono-repo:fe ./app/fe
+          docker build -t your-dockerhub-username/my-mono-repo:fe ./apps/fe
           docker push your-dockerhub-username/my-mono-repo:fe
 
       - name: Build and push WEB image
         run: |
-          docker build -t your-dockerhub-username/my-mono-repo:web ./app/web
+          docker build -t your-dockerhub-username/my-mono-repo:web ./apps/web
           docker push your-dockerhub-username/my-mono-repo:web
