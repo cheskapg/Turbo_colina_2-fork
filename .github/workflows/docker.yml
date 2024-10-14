@@ -21,10 +21,10 @@ jobs:
 
       - name: Build and push FE image
         run: |
-          docker build -t your-dockerhub-username/my-mono-repo:fe .
-          docker push your-dockerhub-username/my-mono-repo:fe
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:fe  ./Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:fe
 
       - name: Build and push WEB image
         run: |
-          docker build -t your-dockerhub-username/my-mono-repo:web .
-          docker push your-dockerhub-username/my-mono-repo:web
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:web ./Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:web
