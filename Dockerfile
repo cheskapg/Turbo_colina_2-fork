@@ -16,8 +16,10 @@ COPY . .
 
 # Prune the monorepo to only include what's needed for the fe app
 RUN turbo prune --scope="@repo/fe" --docker
+# Prune the monorepo to only include what's needed for the web app
+RUN turbo prune --scope="@repo/web" --docker
 
-# 2. Install dependencies for fe (installer stage)
+# 2. Install dependencies for fe and web (installer stage)
 FROM node:16-alpine AS installer
 
 # Install necessary packages
@@ -28,33 +30,51 @@ RUN apk update
 WORKDIR /app
 
 # Install dependencies for fe app
-COPY --from=builder /app/out/json/@repo/fe/package.json ./apps/@repo/fe/package.json
+COPY --from=builder /app/out/json/fe/package.json ./apps/fe/package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
-RUN npm install --prefix ./apps/@repo/fe
+RUN npm install --prefix ./apps/fe
 
-# 3. Build the fe app
-FROM node:16-alpine AS builder-fe
+# Install dependencies for web app
+COPY --from=builder /app/out/json/web/package.json ./apps/web/package.json
+RUN npm install --prefix ./apps/web
+
+# 3. Build the fe and web apps
+FROM node:16-alpine AS builder-fe-web
+
+# Set the working directory
 WORKDIR /app
 
 # Copy the source code for fe app
-COPY --from=builder /app/out/full/@repo/fe ./apps/@repo/fe
+COPY --from=builder /app/out/full/fe ./apps/fe
+
+# Copy the source code for web app
+COPY --from=builder /app/out/full/web ./apps/web
 
 # Build fe app
-RUN npm run build --prefix ./apps/@repo/fe
+RUN npm run build --prefix ./apps/fe
 
-# 4. Final stage - Create a lightweight production image for the app
+# Build web app
+RUN npm run build --prefix ./apps/web
+
+# 4. Final stage - Create a lightweight production image for both apps
 FROM node:16-alpine AS runner
 
-# Build arguments to specify the app to run
+# Build argument to specify the app to run
 ARG APP
+
 # Set the working directory
 WORKDIR /app
 
 # Copy the built app from the previous stages
-COPY --from=builder-fe /app/apps/@repo/${APP} ./apps/@repo/${APP}
+COPY --from=builder-fe-web /app/apps/${APP} ./apps/${APP}
 
-# Expose the port based on the app
-EXPOSE 3000  # You can set this dynamically if needed, expose one port per service.
+# Set environment variable for the port based on the app
+# Assuming fe runs on 3000 and web runs on 4000
+ENV PORT=3000
+RUN if [ "${APP}" = "web" ]; then export PORT=4000; fi
+
+# Expose the port
+EXPOSE ${PORT}
 
 # Set the default command to run the specific app
-CMD ["npm", "run", "start", "--prefix", "./apps/@repo/${APP}"]
+CMD ["sh", "-c", "npm run start --prefix ./apps/${APP} -- --port $PORT"]
