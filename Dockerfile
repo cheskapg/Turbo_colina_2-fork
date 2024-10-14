@@ -18,7 +18,7 @@ COPY . .
 RUN turbo prune --scope="@repo/fe" --docker && ls -R /app/out
 # Prune the monorepo to only include what's needed for the web app
 RUN turbo prune --scope="@repo/web" --docker
-
+RUN ls -R /app/out/json/fe/package.json
 # 2. Install dependencies for fe and web (installer stage)
 FROM node:16-alpine AS installer
 
