@@ -16,6 +16,11 @@ COPY . .
 
 # Prune the monorepo to only include what's needed for the fe app
 RUN turbo prune --scope="@repo/fe" --docker && ls -R /app/out
+# Check the contents of /app/out/full/@repo before copying
+RUN ls -R /app/out/full/@repo
+# Check the contents of /app/out/full/@repo before copying
+RUN ls -R /app/out/full/
+
 # Prune the monorepo to only include what's needed for the web app
 RUN turbo prune --scope="@repo/web" --docker
 
