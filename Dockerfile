@@ -15,7 +15,7 @@ RUN npm install -g turbo
 COPY . .
 
 # Prune the monorepo to only include what's needed for the fe app
-RUN turbo prune --scope="@repo/fe" --docker
+RUN turbo prune --scope="@repo/fe" --docker && ls -R /app/out
 # Prune the monorepo to only include what's needed for the web app
 RUN turbo prune --scope="@repo/web" --docker
 
