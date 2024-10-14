@@ -71,7 +71,7 @@ WORKDIR /app
 COPY --from=builder-fe-web /app/apps/${APP} ./apps/${APP}
 
 # Expose the port based on the app
-EXPOSE 3000  # You can set this dynamically if needed, but typically you'll expose one port per service.
+EXPOSE 3000  # You can set this dynamically if needed, expose one port per service.
 
 # Set the default command to run the specific app
 CMD ["npm", "run", "start", "--prefix", "./apps/${APP}"]
