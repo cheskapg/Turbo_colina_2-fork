@@ -20,7 +20,9 @@
   "packageManager": "npm@10.8.2",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "apps/fe",
+    "apps/web"
   ],
   "dependencies": {
     "clsx": "^2.1.1",
