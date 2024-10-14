@@ -31,13 +31,11 @@ WORKDIR /app
 
 # Install dependencies for fe app
 COPY --from=builder /app/out/json/apps/fe/package.json ./apps/fe
-COPY --from=builder /app/package-lock.json ./package-lock.json
+COPY --from=builder /app/package-lock.json ./  
 RUN npm install --prefix ./apps/fe
 
 # Install dependencies for web app
 COPY --from=builder /app/out/json/apps/web/package.json ./apps/web
-COPY --from=builder /app/package-lock.json ./package-lock.json
-
 RUN npm install --prefix ./apps/web
 
 # 3. Build the fe and web apps
