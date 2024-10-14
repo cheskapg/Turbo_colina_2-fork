@@ -45,10 +45,10 @@ FROM node:16-alpine AS builder-fe-web
 WORKDIR /app
 
 # Copy the source code for fe app
-COPY --from=builder /app/out/full/fe ./apps/fe
+COPY --from=builder /app/out/full/@repo/fe ./apps/fe
 
 # Copy the source code for web app
-COPY --from=builder /app/out/full/web ./apps/web
+COPY --from=builder /app/out/full/@repo/web ./apps/web
 
 # Build fe app
 RUN npm run build --prefix ./apps/fe
