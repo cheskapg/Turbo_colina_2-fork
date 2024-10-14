@@ -1,4 +1,3 @@
-
 # 1. Builder stage
 FROM node:16-alpine AS builder
 
@@ -61,7 +60,7 @@ RUN npm run build --prefix ./apps/web
 # 4. Final stage - Create a lightweight production image for both apps
 FROM node:16-alpine AS runner
 
-# Build arguments to specify the app to run
+# Build argument to specify the app to run
 ARG APP
 
 # Set the working directory
@@ -70,8 +69,13 @@ WORKDIR /app
 # Copy the built app from the previous stages
 COPY --from=builder-fe-web /app/apps/${APP} ./apps/${APP}
 
-# Expose the port based on the app
-EXPOSE 3000  # You can set this dynamically if needed, expose one port per service.
+# Set environment variable for the port based on the app
+# Assuming fe runs on 3000 and web runs on 4000
+ENV PORT=3000
+RUN if [ "${APP}" = "web" ]; then export PORT=4000; fi
+
+# Expose the port
+EXPOSE ${PORT}
 
 # Set the default command to run the specific app
-CMD ["npm", "run", "start", "--prefix", "./apps/${APP}"]
+CMD ["sh", "-c", "npm run start --prefix ./apps/${APP} -- --port $PORT"]
