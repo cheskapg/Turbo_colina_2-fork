@@ -21,10 +21,10 @@ jobs:
 
       - name: Build and push FE image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:fe  ./Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:fe  ./
           docker push ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:fe
 
       - name: Build and push WEB image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:web ./Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:web ./
           docker push ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:web
