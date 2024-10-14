@@ -16,11 +16,6 @@ COPY . .
 
 # Prune the monorepo to only include what's needed for the fe app
 RUN turbo prune --scope="@repo/fe" --docker && ls -R /app/out
-# Check the contents of /app/out/full/@repo before copying
-RUN ls -R /app/out/full/@repo
-# Check the contents of /app/out/full/@repo before copying
-RUN ls -R /app/out/full/
-
 # Prune the monorepo to only include what's needed for the web app
 RUN turbo prune --scope="@repo/web" --docker
 
@@ -50,10 +45,10 @@ FROM node:16-alpine AS builder-fe-web
 WORKDIR /app
 
 # Copy the source code for fe app
-COPY --from=builder /app/out/full/@repo/fe ./apps/fe
+COPY --from=builder /app/out/full/apps/fe ./apps/fe
 
 # Copy the source code for web app
-COPY --from=builder /app/out/full/@repo/web ./apps/web
+COPY --from=builder /app/out/full/apps/web ./apps/web
 
 # Build fe app
 RUN npm run build --prefix ./apps/fe
