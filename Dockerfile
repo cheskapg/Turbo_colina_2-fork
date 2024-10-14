@@ -32,13 +32,13 @@ WORKDIR /app
 # Install dependencies for fe app
 COPY --from=builder /app/out/json/apps/fe/package.json ./apps/fe/package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
-RUN npm install --prefix ./apps/fe
+RUN npm install --prefix ./apps/fe/package.json
 
 # Install dependencies for web app
 COPY --from=builder /app/out/json/apps/web/package.json ./apps/web/package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 
-RUN npm install --prefix ./apps/web
+RUN npm install --prefix ./apps/web/package.json
 
 # 3. Build the fe and web apps
 FROM node:16-alpine AS builder-fe-web
