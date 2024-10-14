@@ -31,15 +31,26 @@ WORKDIR /app
 
 # Install dependencies for fe app
 # Copy package.json and package-lock.json to the correct location
-COPY --from=builder /app/out/json/apps/fe/package.json /app/out/json/apps/fe/
-COPY --from=builder /app/package-lock.json /app/out/json/
+# COPY --from=builder /app/out/json/apps/fe/package.json /app/out/json/apps/fe/
+# COPY --from=builder /app/package-lock.json /app/out/json/
 
-RUN npm install --prefix /app/out/json/apps/fe
+# RUN npm install --prefix /app/out/json/apps/fe
+
+# # Install dependencies for web app
+# COPY --from=builder /app/out/json/apps/web/package.json /app/out/json/apps/web/
+# RUN npm install --prefix /app/out/json/apps/web
+
+
+# Install dependencies for fe app
+# Copy package.json and package-lock.json to the correct location
+COPY --from=builder /app/out/full/apps/fe/package.json /app/out/full/apps/fe/
+COPY --from=builder /app/out/package-lock.json /app/out/full/
+
+RUN npm install --prefix /app/out/full/apps/fe || true
 
 # Install dependencies for web app
-COPY --from=builder /app/out/json/apps/web/package.json /app/out/json/apps/web/
-RUN npm install --prefix /app/out/json/apps/web
-
+COPY --from=builder /app/out/full/apps/web/package.json /app/out/full/apps/web/
+RUN npm install --prefix /app/out/full/apps/web || true
 # 3. Build the fe and web apps
 FROM node:16-alpine AS builder-fe-web
 
