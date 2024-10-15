@@ -36,8 +36,7 @@ COPY --from=builder /app/out/full ./out/full
 # Log the contents of the output directory again
 RUN ls -la ./out/full
 # Install dependencies for both apps
-RUN yarn install --frozen-lockfile
-
+RUN yarn install --frozen-lockfile --cwd ./out/full
 # Build both fe and web apps
 RUN yarn build --cwd ./out/full/apps/fe
 RUN yarn build --cwd ./out/full/apps/web
