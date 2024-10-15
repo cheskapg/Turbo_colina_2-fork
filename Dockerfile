@@ -76,9 +76,10 @@ FROM base AS fe_runner
 WORKDIR /app
 
 # Copy the built fe app from the installer stage
-COPY --from=installer /app/out/full/apps/fe/.next/standalone ./
-COPY --from=installer /app/out/full/apps/fe/.next/static ./apps/fe/.next/static
-COPY --from=installer /app/out/full/apps/fe/public ./apps/fe/public
+# COPY --from=installer /app/out/full/apps/fe/.next/standalone ./
+# COPY --from=installer /app/out/full/apps/fe/.next/static ./apps/fe/.next/static
+# COPY --from=installer /app/out/full/apps/fe/public ./apps/fe/public
+COPY --from=installer /app/out/full/apps/fe ./apps/fe
 
 # Expose the port for fe
 ENV PORT=3000
