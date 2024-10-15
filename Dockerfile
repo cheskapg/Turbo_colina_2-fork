@@ -12,7 +12,7 @@ WORKDIR /app
 RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
 
 # Install tailwindcss globally
-RUN npm install -g tailwindcss
+# RUN npm install -g tailwindcss
 # Install turbo globally
 RUN yarn global add turbo
 
@@ -45,18 +45,28 @@ RUN ls -la ./out/full/apps/fe
 RUN ls -la ./out/full/apps/fe
 
 
+# Copy the UI package
+COPY ./packages/ui ./packages/ui
+WORKDIR /app/packages/ui
 # Build both fe and web apps
 RUN yarn install --frozen-lockfile --cwd ./out/full
+
+# Build the UI package
+RUN yarn run build  # Builds the UI package, make sure this command works
+
+# Build both fe and web apps
+RUN yarn --cwd ./out/full/apps/fe build
+RUN yarn --cwd ./out/full/apps/web build
 # Copy the UI package and build it
-COPY ./packages/ui ./packages/ui
-WORKDIR ./packages/ui
-RUN npm run build  # Builds the UI package, make sure this command works
+# COPY ./packages/ui ./packages/ui
+# WORKDIR ./packages/ui
+# RUN npm run build  # Builds the UI package, make sure this command works
 
 # Add this in your Dockerfile for debugging purposes
 RUN ls -la /app/out/full/packages/ui/dist
 
-RUN yarn --cwd ./out/full/apps/fe build
-RUN yarn --cwd ./out/full/apps/web build
+# RUN yarn --cwd ./out/full/apps/fe build
+# RUN yarn --cwd ./out/full/apps/web build
 # # Build both fe and web apps
 # RUN yarn build --cwd ./out/full/apps/fe
 # RUN yarn build --cwd ./out/full/apps/web
