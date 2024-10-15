@@ -17,13 +17,7 @@
     "node": ">=18"
   },
   "name": "with-tailwind",
-  "packageManager": "npm@10.8.2",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "apps/fe",
-    "apps/web"
-  ],
+  "packageManager": "pnpm@7",  
   "dependencies": {
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.5.3"

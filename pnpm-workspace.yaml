@@ -1,2 +1,5 @@
 packages:
-  - 'packages/*' # Adjust this path according to your package structure
+  - 'apps/*'
+  - 'packages/*'          # General path for all packages
+  - 'apps/fe'             # Specific path for the fe app
+  - 'apps/web'            # Specific path for the web app
