@@ -22,7 +22,8 @@ COPY . .
 
 # Prune the monorepo to include what's needed for fe and web
 RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
-
+# Log the contents of the output directory
+RUN ls -la /app/out/full
 # 3. Installer stage for fe and web
 FROM base AS installer
 
