@@ -87,7 +87,7 @@ EXPOSE 3000
 
 # Set the default command to run the fe app
 
-CMD ["yarn", "--cwd", "apps/fe", "dev"]
+CMD ["npm", "run", "dev", "--prefix", "apps/fe"]
 
 # 5. Runner stage for web
 FROM base AS web_runner
@@ -106,4 +106,5 @@ ENV PORT=4000
 EXPOSE 4000
 
 # Set the default command to run the web app
-CMD ["yarn", "--cwd", "apps/web", "dev"]
+CMD ["npm", "run", "dev", "--prefix", "apps/web"]
+
