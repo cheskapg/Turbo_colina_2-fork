@@ -56,7 +56,7 @@ WORKDIR /app/packages/config-tailwind
 WORKDIR /app/packages/config-typescript
 # RUN npm run build  
 WORKDIR /app/packages/ui
-
+RUN npm install
 # Build the UI package
 RUN npm run build  
 # Build both fe and web apps
