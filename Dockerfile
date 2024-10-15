@@ -50,17 +50,17 @@ COPY ./packages/config-eslint ./packages/config-eslint
 COPY ./packages/config-tailwind ./packages/config-tailwind
 COPY ./packages/config-typescript ./packages/config-typescript
 COPY ./packages/ui ./packages/ui
-WORKDIR /app/packages/ui
 
-# Build the UI package
-RUN yarn run build  
 WORKDIR /app/packages/config-eslint
 RUN yarn run build  
 WORKDIR /app/packages/config-tailwind
 RUN yarn run build  
 WORKDIR /app/packages/config-typescript
 RUN yarn run build  
+WORKDIR /app/packages/ui
 
+# Build the UI package
+RUN yarn run build  
 # Build both fe and web apps
 RUN yarn --cwd ./out/full/apps/fe build
 RUN yarn --cwd ./out/full/apps/web build
