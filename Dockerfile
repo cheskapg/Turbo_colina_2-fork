@@ -58,7 +58,7 @@ WORKDIR /app/packages/config-typescript
 WORKDIR /app/packages/ui
 
 # Build the UI package
-RUN yarn run build  
+RUN npm run build  
 # Build both fe and web apps
 RUN yarn --cwd ./out/full/apps/fe build
 RUN yarn --cwd ./out/full/apps/web build
