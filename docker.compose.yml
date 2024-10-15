@@ -4,25 +4,23 @@ services:
   fe:
     build:
       context: .
-      dockerfile: Dockerfile
-      target: fe_runner
+      dockerfile: ./Dockerfile.dev
       args:
-        PROJECT: fe  # Pass the PROJECT argument for fe
+        APP: fe
     ports:
-      - "3000:3000"  # Map port 3000 for fe
-    environment:
-      - NODE_ENV=production
-    command: yarn next start  # Set the default command to run the fe app
+      - "3000:3000"
+    volumes:
+      - ./apps/fe:/app/apps/fe
+      - /app/apps/fe/node_modules
 
   web:
     build:
       context: .
-      dockerfile: Dockerfile
-      target: web_runner
+      dockerfile: ./Dockerfile.dev
       args:
-        PROJECT: web  # Pass the PROJECT argument for web
+        APP: web
     ports:
-      - "4000:4000"  # Map port 4000 for web
-    environment:
-      - NODE_ENV=production
-    command: yarn next start  # Set the default command to run the web app
+      - "3333:3333"
+    volumes:
+      - ./apps/web:/app/apps/web
+      - /app/apps/web/node_modules

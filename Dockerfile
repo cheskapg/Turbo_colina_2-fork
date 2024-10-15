@@ -1,52 +1,47 @@
-# Base image
-ARG NODE_VERSION=18.18.0
-FROM node:${NODE_VERSION}-alpine AS base
+# syntax=docker/dockerfile:1.5.2
+FROM node:20.2-alpine3.17 AS base
 
-# Install necessary packages
-RUN apk update && apk add --no-cache libc6-compat
+# Install necessary packages and Turborepo
+RUN apk add -f --update --no-cache --virtual .gyp nano bash libc6-compat python3 make g++ \
+      && yarn global add turbo \
+      && apk del .gyp
 
-# Set the working directory inside the container
+# Common build stage for both services
+FROM base AS builder
 WORKDIR /app
 
-# Install dependencies globally (only if needed)
-RUN npm install -g yarn tailwindcss turbo
-
-# Builder stage for both fe and web
-FROM base AS builder
 COPY . .
 
-# Install dependencies locally
-RUN yarn install --frozen-lockfile
+# Prune the workspaces to only include the necessary packages
+ARG APP
+RUN turbo prune --scope=$APP --docker
 
-# Prune the monorepo to include what's needed for fe and web
-RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
-
-# Installer stage for both fe and web
+# Installer stage for dependencies
 FROM base AS installer
 WORKDIR /app
-COPY ./packages ./packages
-COPY --from=builder /app/out/json ./out/json
-COPY --from=builder /app/out/full ./out/full
+ARG APP
 
-# Install dependencies for both apps
-RUN yarn install --frozen-lockfile --cwd ./out/full
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/yarn.lock /app/yarn.lock
+COPY apps/${APP}/package.json /app/apps/${APP}/package.json
 
-# Build both fe and web apps
-RUN yarn build --cwd ./out/full/apps/fe
-RUN yarn build --cwd ./out/full/apps/web
+# Install dependencies for the specific app
+RUN \
+      --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=locked \
+      yarn --prefer-offline --frozen-lockfile
 
-# Runner stage for fe
-FROM base AS fe_runner
-WORKDIR /app/out/full/apps/fe
-COPY --from=installer /app/out/full/apps/fe ./
-ENV PORT=3000
-EXPOSE ${PORT}
-CMD ["yarn", "next", "start"]
+COPY --from=builder /app/out/full/ .
+COPY turbo.json turbo.json
 
-# Runner stage for web
-FROM base AS web_runner
-WORKDIR /app/out/full/apps/web
-COPY --from=installer /app/out/full/apps/web ./
-ENV PORT=4000
-EXPOSE ${PORT}
-CMD ["yarn", "next", "start"]
+# Build the necessary dependencies for the specified app
+RUN turbo run build --no-cache --filter=${APP}^...
+
+# Final runner stage
+FROM base AS runner
+WORKDIR /app
+ARG APP
+ARG START_COMMAND=dev
+
+COPY --from=installer /app .
+
+CMD yarn workspace ${APP} ${START_COMMAND}
