@@ -31,6 +31,7 @@ FROM base AS installer
 
 # Set the working directory
 WORKDIR /app
+COPY ./packages ./packages
 
 # Copy the pruned output from the builder stage
 COPY --from=builder /app/out/json ./out/json
@@ -46,10 +47,7 @@ RUN ls -la ./out/full/apps/fe
 
 
 # Copy the UI package
-COPY ./packages/config-eslint ./packages/config-eslint
-COPY ./packages/config-tailwind ./packages/config-tailwind
-COPY ./packages/config-typescript ./packages/config-typescript
-COPY ./packages/ui ./packages/ui
+
 
 WORKDIR /app/packages/config-eslint
 # RUN npm run build  
