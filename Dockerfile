@@ -8,8 +8,8 @@ RUN apk update
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install yarn globally
-RUN npm install -g yarn
+# Install yarn globally if it's not already installed
+RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
 
 # Install turbo globally
 RUN yarn global add turbo
