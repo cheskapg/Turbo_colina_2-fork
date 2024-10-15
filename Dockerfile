@@ -41,12 +41,18 @@ RUN yarn install --frozen-lockfile --cwd ./out/full
 # Verify contents of fe directory
 RUN ls -la ./out/full/apps/fe
 RUN ls -la ./out/full/apps/fe
-RUN ls -la ./out/full/packages/ui/dist
-# Add this in your Dockerfile for debugging purposes
-RUN ls -la /app/out/full/packages/ui/dist
+
 
 # Build both fe and web apps
 RUN yarn install --frozen-lockfile --cwd ./out/full
+# Copy the UI package and build it
+COPY ./packages/ui ./packages/ui
+WORKDIR ./packages/ui
+RUN npm run build  # Builds the UI package, make sure this command works
+
+# Add this in your Dockerfile for debugging purposes
+RUN ls -la /app/out/full/packages/ui/dist
+
 RUN yarn --cwd ./out/full/apps/fe build
 RUN yarn --cwd ./out/full/apps/web build
 # # Build both fe and web apps
