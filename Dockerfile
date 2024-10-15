@@ -16,6 +16,9 @@ RUN npm install -g tailwindcss
 # Install turbo globally
 RUN yarn global add turbo
 
+# Install next globally
+RUN yarn global add next
+
 # 2. Builder stage for both fe and web
 FROM base AS builder
 
@@ -84,7 +87,8 @@ ENV PORT=3000
 EXPOSE 3000
 
 # Set the default command to run the fe app
-CMD ["yarn", "dev"]
+ENV PATH=$PATH:/app/node_modules/.bin
+CMD ["yarn", "next", "dev"]
 
 # Set the default command to run the fe app
 
@@ -103,4 +107,4 @@ ENV PORT=4000
 EXPOSE 4000
 
 # Set the default command to run the web app
-CMD ["yarn", "dev"]
+CMD ["yarn", "next", "dev"]
