@@ -11,6 +11,8 @@ WORKDIR /app
 # Install yarn globally if it's not already installed
 RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
 
+# Install tailwindcss globally
+RUN npm install -g tailwindcss
 # Install turbo globally
 RUN yarn global add turbo
 
