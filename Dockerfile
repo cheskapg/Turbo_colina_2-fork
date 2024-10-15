@@ -73,37 +73,34 @@ RUN yarn --cwd ./out/full/apps/web build
 FROM base AS fe_runner
 
 # Set the working directory
-WORKDIR /app
+# Set the working directory
+WORKDIR /app/out/full/apps/fe
 
 # Copy the built fe app from the installer stage
-# COPY --from=installer /app/out/full/apps/fe/.next/standalone ./
-# COPY --from=installer /app/out/full/apps/fe/.next/static ./apps/fe/.next/static
-# COPY --from=installer /app/out/full/apps/fe/public ./apps/fe/public
-COPY --from=installer /app/out/full/apps/fe ./apps/fe
+COPY --from=installer /app/out/full/apps/fe ./
+
 # Expose the port for fe
 ENV PORT=3000
 EXPOSE 3000
 
 # Set the default command to run the fe app
+CMD ["yarn", "dev"]
 
-CMD ["yarn", "turbo", "run", "start", "--filter=./apps/fe"]
+# Set the default command to run the fe app
+
+
 
 # 5. Runner stage for web
 FROM base AS web_runner
-
 # Set the working directory
-WORKDIR /app
+WORKDIR /app/out/full/apps/web
 
 # Copy the built web app from the installer stage
-# COPY --from=installer /app/out/full/apps/web/.next/standalone ./
-# COPY --from=installer /app/out/full/apps/web/.next/static ./apps/web/.next/static
-# COPY --from=installer /app/out/full/apps/web/public ./apps/web/public
-COPY --from=installer /app/out/full/apps/web ./apps/web
+COPY --from=installer /app/out/full/apps/web ./
 
 # Expose the port for web
 ENV PORT=4000
 EXPOSE 4000
 
 # Set the default command to run the web app
-CMD ["yarn", "turbo", "run", "start", "--filter=./apps/web"]
-
+CMD ["yarn", "dev"]
