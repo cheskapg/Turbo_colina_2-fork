@@ -32,16 +32,19 @@ WORKDIR /app
 COPY --from=builder /app/out/full ./out/full
 COPY --from=builder /app/out/json ./out/json
 
+COPY --from=builder /app/out/package-lock.json ./package-lock.json
+
+
 # Copy the internal packages
 COPY packages ./packages
 RUN npm install --global npm@9.8.1
 
 
 # Install dependencies for fe app (including internal packages)
-RUN npm install --prefix ./out/full/apps/fe || true
+RUN npm install
 
-# Install dependencies for web app (including internal packages)
-RUN npm install --prefix ./out/full/apps/web || true
+# # Install dependencies for web app (including internal packages)
+# RUN npm install --prefix ./out/full/apps/web || true
 
 # 3. Build the fe and web apps
 FROM node:16-alpine AS builder-fe-web
