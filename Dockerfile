@@ -41,10 +41,10 @@ RUN npm install --global npm@9.8.1
 
 
 # Install dependencies for fe app (including internal packages)
-RUN npm install
+RUN npm install --prefix ./out/full/apps/fe || true
 
-# # Install dependencies for web app (including internal packages)
-# RUN npm install --prefix ./out/full/apps/web || true
+# Install dependencies for web app (including internal packages)
+RUN npm install --prefix ./out/full/apps/web || true
 
 # 3. Build the fe and web apps
 FROM node:16-alpine AS builder-fe-web
