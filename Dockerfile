@@ -15,9 +15,12 @@ RUN npm install -g turbo
 COPY . .
 
 # Prune the monorepo to only include what's needed for the fe app
-RUN turbo prune --scope="@repo/fe" --docker && ls -R /app/out
-# Prune the monorepo to only include what's needed for the web app
-RUN turbo prune --scope="@repo/web" --docker && ls -R /app/out
+# RUN turbo prune --scope="@repo/fe" --docker && ls -R /app/out
+# # Prune the monorepo to only include what's needed for the web app
+# RUN turbo prune --scope="@repo/web" --docker && ls -R /app/out
+
+
+RUN turbo prune --scope="@repo/fe,@repo/web" --docker && ls -R /app/out
 
 # 2. Install dependencies for fe and web (installer stage)
 FROM node:16-alpine AS installer
@@ -46,11 +49,13 @@ WORKDIR /app
 COPY --from=builder /app/out/full/apps/fe/package.json /app/out/full/apps/fe/
 COPY --from=builder /app/out/package-lock.json /app/out/full/
 
-RUN npm install --prefix /app/out/full/apps/fe || true
-
+# RUN npm install --prefix /app/out/full/apps/fe || true
+# Install internal packages (using npm install with workspace support)
+RUN npm install --workspace @repo/fe || true
 # Install dependencies for web app
 COPY --from=builder /app/out/full/apps/web/package.json /app/out/full/apps/web/
-RUN npm install --prefix /app/out/full/apps/web || true
+# RUN npm install --prefix /app/out/full/apps/web || true
+RUN npm install --workspace @repo/web || true
 # 3. Build the fe and web apps
 FROM node:16-alpine AS builder-fe-web
 

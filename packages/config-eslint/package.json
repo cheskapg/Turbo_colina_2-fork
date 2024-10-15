@@ -1,9 +1,16 @@
 {
-  "name": "@repo/eslint-config",
-  "version": "0.0.0",
-  "private": true,
+  "name": "config-eslint",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "@vercel/style-guide": "^5.2.0",
-    "eslint-config-turbo": "^2.0.0"
+    "@vercel/style-guide": "^6.0.0",
+    "eslint-config-turbo": "^2.1.3"
   }
 }
