@@ -95,9 +95,10 @@ FROM base AS web_runner
 WORKDIR /app
 
 # Copy the built web app from the installer stage
-COPY --from=installer /app/out/full/apps/web/.next/standalone ./
-COPY --from=installer /app/out/full/apps/web/.next/static ./apps/web/.next/static
-COPY --from=installer /app/out/full/apps/web/public ./apps/web/public
+# COPY --from=installer /app/out/full/apps/web/.next/standalone ./
+# COPY --from=installer /app/out/full/apps/web/.next/static ./apps/web/.next/static
+# COPY --from=installer /app/out/full/apps/web/public ./apps/web/public
+COPY --from=installer /app/out/full/apps/web ./apps/web
 
 # Expose the port for web
 ENV PORT=4000
