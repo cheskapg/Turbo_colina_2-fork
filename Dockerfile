@@ -80,14 +80,13 @@ WORKDIR /app
 # COPY --from=installer /app/out/full/apps/fe/.next/static ./apps/fe/.next/static
 # COPY --from=installer /app/out/full/apps/fe/public ./apps/fe/public
 COPY --from=installer /app/out/full/apps/fe ./apps/fe
-
 # Expose the port for fe
 ENV PORT=3000
 EXPOSE 3000
 
 # Set the default command to run the fe app
 
-CMD ["npm", "run", "dev", "--prefix", "apps/fe"]
+CMD ["yarn", "turbo", "run", "start", "--filter=./apps/fe"]
 
 # 5. Runner stage for web
 FROM base AS web_runner
@@ -106,5 +105,5 @@ ENV PORT=4000
 EXPOSE 4000
 
 # Set the default command to run the web app
-CMD ["npm", "run", "dev", "--prefix", "apps/web"]
+CMD ["yarn", "turbo", "run", "start", "--filter=./apps/web"]
 
