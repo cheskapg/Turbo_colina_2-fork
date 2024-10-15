@@ -115,7 +115,8 @@ RUN npm install -g turbo
 COPY . .
 
 # Prune the monorepo to only include what's needed for the fe and web apps
-RUN turbo prune --scope="@repo/fe","@repo/web" --docker
+RUN turbo prune --scope="@repo/fe" --docker
+RUN turbo prune --scope="@repo/web" --docker
 
 # 2. Install dependencies for fe and web (installer stage)
 FROM node:16-alpine AS installer
