@@ -135,11 +135,12 @@ COPY --from=builder /app/out/json ./out/json
 # Copy the internal packages
 COPY packages ./packages
 
-# Install dependencies for fe app (including internal packages)
-RUN npm install --prefix ./out/full/apps/fe || true
+# Install dependencies for fe app
+RUN npm ci --prefix ./out/full/apps/fe || true
 
-# Install dependencies for web app (including internal packages)
-RUN npm install --prefix ./out/full/apps/web || true
+# Install dependencies for web app
+RUN npm ci --prefix ./out/full/apps/web || true
+
 
 # 3. Build the fe and web apps
 FROM node:16-alpine AS builder-fe-web
