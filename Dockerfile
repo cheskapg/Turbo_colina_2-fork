@@ -52,11 +52,11 @@ COPY ./packages/config-typescript ./packages/config-typescript
 COPY ./packages/ui ./packages/ui
 
 WORKDIR /app/packages/config-eslint
-RUN yarn run build  
+RUN npm run build  
 WORKDIR /app/packages/config-tailwind
-RUN yarn run build  
+RUN npm run build  
 WORKDIR /app/packages/config-typescript
-RUN yarn run build  
+RUN npm run build  
 WORKDIR /app/packages/ui
 
 # Build the UI package
