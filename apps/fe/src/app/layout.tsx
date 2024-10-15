@@ -1,5 +1,5 @@
 import "./globals.css";
-import "@repo/ui/styles.css";
+import "@repo/ui/styles.css"; // This will resolve to @repo/ui/dist/index.css
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
@@ -24,3 +24,4 @@ export default function RootLayout({
     </html>
   );
 }
+//apps/fe/src/app/layout.tsx

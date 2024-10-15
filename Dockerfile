@@ -40,6 +40,10 @@ RUN yarn install --frozen-lockfile --cwd ./out/full
 
 # Verify contents of fe directory
 RUN ls -la ./out/full/apps/fe
+RUN ls -la ./out/full/apps/fe
+RUN ls -la ./out/full/packages/ui/dist
+# Add this in your Dockerfile for debugging purposes
+RUN ls -la /app/out/full/packages/ui/dist
 
 # Build both fe and web apps
 RUN yarn install --frozen-lockfile --cwd ./out/full
