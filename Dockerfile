@@ -1,5 +1,5 @@
 # 1. Builder stage
-FROM node:16-alpine AS builder
+FROM node:18-alpine AS builder
 
 # Install necessary packages
 RUN apk add --no-cache libc6-compat
@@ -19,7 +19,7 @@ RUN pnpm turbo prune --scope="@repo/fe" --docker
 RUN pnpm turbo prune --scope="@repo/web" --docker
 
 # 2. Install dependencies for fe and web (installer stage)
-FROM node:16-alpine AS installer
+FROM node:18-alpine AS installer
 
 # Install necessary packages
 RUN apk add --no-cache libc6-compat
@@ -42,7 +42,7 @@ RUN pnpm install --prefix ./out/full/apps/fe || true
 RUN pnpm install --prefix ./out/full/apps/web || true
 
 # 3. Build the fe and web apps
-FROM node:16-alpine AS builder-fe-web
+FROM node:18-alpine AS builder-fe-web
 
 # Set the working directory
 WORKDIR /app
@@ -60,7 +60,7 @@ RUN pnpm run build --prefix ./apps/fe
 RUN pnpm run build --prefix ./apps/web
 
 # 4. Final stage - Create a lightweight production image for both apps
-FROM node:16-alpine AS runner
+FROM node:18-alpine AS runner
 
 # Build argument to specify the app to run
 ARG APP
