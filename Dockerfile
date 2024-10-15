@@ -62,8 +62,6 @@ RUN yarn --cwd ./out/full/apps/web build
 # WORKDIR ./packages/ui
 # RUN npm run build  # Builds the UI package, make sure this command works
 
-# Add this in your Dockerfile for debugging purposes
-RUN ls -la /app/out/full/packages/ui/dist
 
 # RUN yarn --cwd ./out/full/apps/fe build
 # RUN yarn --cwd ./out/full/apps/web build
