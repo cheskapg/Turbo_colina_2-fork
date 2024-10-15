@@ -18,7 +18,7 @@ COPY . .
 RUN echo "packages:\n  - 'packages/*'" > pnpm-workspace.yaml
 
 # Prune the monorepo to only include what's needed for the fe and web apps
-RUN pnpm turbo prune --scope="@repo/fe" --docker
+RUN pnpm turbo prune --scope="@repo/fe" --docker --loglevel debug
 RUN pnpm turbo prune --scope="@repo/web" --docker
 
 
