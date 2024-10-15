@@ -49,11 +49,11 @@ RUN ls -la ./out/full/apps/fe
 
 COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
-RUN yarn turbo run build --filter=fe...
+RUN  turbo run build --filter=@repo/fe...
 # Copy the UI package
 
 
-RUN yarn turbo run build --filter=web...
+RUN turbo run build --filter=@repo/web...
 
 # # RUN npm run build  
 # WORKDIR /app/packages/ui
