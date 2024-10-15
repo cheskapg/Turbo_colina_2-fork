@@ -14,11 +14,11 @@ RUN npm install -g turbo
 # Copy everything to the container
 COPY . .
 
-# Prune the monorepo to only include what's needed for the fe and api apps
+# Prune the monorepo to only include what's needed for the fe and web apps
 RUN turbo prune --scope="@repo/fe" --docker
-RUN turbo prune --scope="@repo/api" --docker
+RUN turbo prune --scope="@repo/web" --docker
 
-# 2. Install dependencies for fe and api (installer stage)
+# 2. Install dependencies for fe and web (installer stage)
 FROM node:16-alpine AS installer
 
 # Install necessary packages
@@ -38,11 +38,11 @@ COPY packages ./packages
 # Install dependencies for fe app (including internal packages)
 RUN npm install --prefix ./out/full/apps/fe || true
 
-# Install dependencies for api app (including internal packages)
-RUN npm install --prefix ./out/full/apps/api || true
+# Install dependencies for web app (including internal packages)
+RUN npm install --prefix ./out/full/apps/web || true
 
-# 3. Build the fe and api apps
-FROM node:16-alpine AS builder-fe-api
+# 3. Build the fe and web apps
+FROM node:16-alpine AS builder-fe-web
 
 # Set the working directory
 WORKDIR /app
@@ -50,14 +50,14 @@ WORKDIR /app
 # Copy the source code for fe app
 COPY --from=installer /app/out/full/apps/fe ./apps/fe
 
-# Copy the source code for api app
-COPY --from=installer /app/out/full/apps/api ./apps/api
+# Copy the source code for web app
+COPY --from=installer /app/out/full/apps/web ./apps/web
 
 # Build fe app
 RUN npm run build --prefix ./apps/fe
 
-# Build api app
-RUN npm run build --prefix ./apps/api
+# Build web app
+RUN npm run build --prefix ./apps/web
 
 # 4. Final stage - Create a lightweight production image for both apps
 FROM node:16-alpine AS runner
@@ -69,12 +69,12 @@ ARG APP
 WORKDIR /app
 
 # Copy the built app from the previous stages
-COPY --from=builder-fe-api /app/apps/${APP} ./apps/${APP}
+COPY --from=builder-fe-web /app/apps/${APP} ./apps/${APP}
 
 # Set environment variable for the port based on the app
-# Assuming fe runs on 3000 and api runs on 3001
+# Assuming fe runs on 3000 and web runs on 4000
 ENV PORT=3000
-RUN if [ "${APP}" = "api" ]; then export PORT=3001; fi
+RUN if [ "${APP}" = "web" ]; then export PORT=4000; fi
 
 # Expose the port
 EXPOSE ${PORT}
