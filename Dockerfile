@@ -3,8 +3,7 @@ FROM node:18-alpine AS base
 
 # Install necessary packages
 RUN apk add --no-cache libc6-compat && \
-    apk update && \
-    npm install -g yarn && \
+    npm install -g yarn --force && \
     yarn global add turbo && \
     npm install -g tailwindcss
 
@@ -70,3 +69,9 @@ COPY --from=installer /app/out/full/apps/web/next.config.js .
 COPY --from=installer /app/out/full/apps/web/package.json . 
 
 # Expose the port for web
+ENV PORT=4000
+EXPOSE 4000
+
+# Set the default command to run the web app
+CMD ["npm", "run", "dev", "--prefix", "apps/web"]
+    
