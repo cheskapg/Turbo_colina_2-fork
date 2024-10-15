@@ -28,52 +28,22 @@ RUN ls -la /app/out/full
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
 RUN apk update
+# 3. Installer stage for fe and web
 WORKDIR /app
 
-# Set the working directory
-COPY ./packages ./packages
-
 # Copy the pruned output from the builder stage
-COPY .gitignore .gitignore
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
+COPY package.json yarn.lock ./
 RUN yarn install
+
 # Log the contents of the output directory again
 RUN ls -la ./out/full
-# Install dependencies for both apps
-# RUN yarn install --frozen-lockfile --cwd ./out/full
 
-# Verify contents of fe directory
-RUN ls -la ./out/full/apps/fe
-RUN ls -la ./out/full/apps/fe
-
-COPY --from=builder /app/out/full/ .
-COPY turbo.json turbo.json
-RUN  turbo run build --filter=@repo/fe...
-# Copy the UI package
-
-
-RUN turbo run build --filter=@repo/web...
-
-# # RUN npm run build  
-# WORKDIR /app/packages/ui
-# # Build the UI package
-# RUN npm run build  
 # Build both fe and web apps
-# RUN yarn --cwd ./out/full/apps/fe build
-# RUN yarn --cwd ./out/full/apps/web build
-# Copy the UI package and build it
-# COPY ./packages/ui ./packages/ui
-# WORKDIR ./packages/ui
-# RUN npm run build  # Builds the UI package, make sure this command works
-
-
-# RUN yarn --cwd ./out/full/apps/fe build
-# RUN yarn --cwd ./out/full/apps/web build
-# # Build both fe and web apps
-# RUN yarn build --cwd ./out/full/apps/fe
-# RUN yarn build --cwd ./out/full/apps/web
-
+RUN turbo run build --filter=@repo/fe...
+RUN turbo run build --filter=@repo/web...
+RUN ls -la
 # 4. Runner stage for fe
 FROM base AS fe_runner
 
@@ -86,6 +56,7 @@ WORKDIR /app
 # COPY --from=installer /app/out/full/apps/fe/public ./apps/fe/public
 COPY --from=installer /app/apps/fe/next.config.js .
 COPY --from=installer /app/apps/fe/package.json ...
+RUN ls -la
 # Expose the port for fe
 ENV PORT=3000
 EXPOSE 3000
