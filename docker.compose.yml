@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  fe:
+    build:
+      context: .
+      dockerfile: apps/fe/Dockerfile
+    ports:
+      - "3000:3000"
+  
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "4000:4000"
