@@ -1,6 +1,6 @@
 # 1. Base image for both fe and web
 FROM node:18-alpine AS base
-
+#twerka
 # Install necessary packages
 RUN apk add --no-cache libc6-compat
 RUN apk update
