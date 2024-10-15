@@ -33,7 +33,8 @@ WORKDIR /app
 # Copy the pruned output from the builder stage
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
-
+# Log the contents of the output directory again
+RUN ls -la ./out/full
 # Install dependencies for both apps
 RUN yarn install --frozen-lockfile
 
