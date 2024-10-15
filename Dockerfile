@@ -37,8 +37,14 @@ COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
 RUN yarn install
 
-# Log the contents of the output directory again
-RUN ls -la ./out/full
+
+# Build both fe and web apps
+RUN turbo run build --filter=@repo/fe...
+RUN turbo run build --filter=@repo/web...
+
+# Log the contents of the web app's .next directory
+RUN ls -la ./out/full/apps/web/.next
+
 
 # 4. Runner stage for fe
 FROM base AS fe_runner
