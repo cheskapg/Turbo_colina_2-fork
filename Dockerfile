@@ -37,9 +37,17 @@ COPY --from=builder /app/out/full ./out/full
 RUN ls -la ./out/full
 # Install dependencies for both apps
 RUN yarn install --frozen-lockfile --cwd ./out/full
+
+# Verify contents of fe directory
+RUN ls -la ./out/full/apps/fe
+
 # Build both fe and web apps
-RUN yarn build --cwd ./out/full/apps/fe
-RUN yarn build --cwd ./out/full/apps/web
+RUN yarn install --frozen-lockfile --cwd ./out/full
+RUN yarn --cwd ./out/full/apps/fe build
+RUN yarn --cwd ./out/full/apps/web build
+# # Build both fe and web apps
+# RUN yarn build --cwd ./out/full/apps/fe
+# RUN yarn build --cwd ./out/full/apps/web
 
 # 4. Runner stage for fe
 FROM base AS fe_runner
