@@ -34,7 +34,7 @@ WORKDIR /app
 # Copy the pruned output from the builder stage
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
-RUN yarn install
+sdsRUN yarn install
 
 # Log the contents of the output directory again
 RUN ls -la ./out/full
