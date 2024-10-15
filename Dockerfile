@@ -17,7 +17,7 @@ COPY . .
 RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
 
 # Log the contents of the output directory
-RUN ls -la /app/out/full
+
 
 # 3. Installer stage for fe and web
 FROM base AS installer
@@ -33,7 +33,7 @@ COPY --from=builder /app/out/full ./out/full
 RUN yarn install
 
 # Log the contents of the output directory again
-RUN ls -la ./out/full
+
 
 # 4. Runner stage for fe
 FROM base AS fe_runner
