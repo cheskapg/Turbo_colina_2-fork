@@ -35,41 +35,40 @@ WORKDIR /app
 # Copy the pruned output from the builder stage
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
+
+
 # Log the contents of the output directory again
 RUN ls -la ./out/full
-# Install dependencies for both apps
-RUN yarn install --frozen-lockfile --cwd ./out/full
 
-# Verify contents of fe directory
-RUN ls -la ./out/full/apps/fe
-RUN ls -la ./out/full/apps/fe
-
-
-# Copy the UI package
+# Copy all relevant packages for local installations
+COPY ./packages/config-eslint ./packages/config-eslint
+COPY ./packages/config-tailwind ./packages/config-tailwind
+COPY ./packages/config-typescript ./packages/config-typescript
 COPY ./packages/ui ./packages/ui
+
+# Ensure all local dev dependencies are installed
 WORKDIR /app/packages/ui
+RUN yarn install --frozen-lockfile  # Install UI package dependencies
+
+WORKDIR /app/packages/config-eslint
+RUN yarn install --frozen-lockfile  # Install ESLint config dependencies
+
+WORKDIR /app/packages/config-tailwind
+RUN yarn install --frozen-lockfile  # Install Tailwind config dependencies
+
+WORKDIR /app/packages/config-typescript
+RUN yarn install --frozen-lockfile  # Install TypeScript config dependencies
+
+# Now go back to the out/full directory to build fe and web apps
+WORKDIR /app/out/full
+
+# Install dependencies for both apps, ensuring local dev dependencies are included
+RUN yarn install --frozen-lockfile --cwd ./apps/fe  # Install for fe
+RUN yarn install --frozen-lockfile --cwd ./apps/web  # Install for web
+
 # Build both fe and web apps
-RUN yarn install --frozen-lockfile --cwd ./out/full
-
-# Build the UI package
-RUN yarn run build  # Builds the UI package, make sure this command works
-
-# Build both fe and web apps
-RUN yarn --cwd ./out/full/apps/fe build
-RUN yarn --cwd ./out/full/apps/web build
-# Copy the UI package and build it
-# COPY ./packages/ui ./packages/ui
-# WORKDIR ./packages/ui
-# RUN npm run build  # Builds the UI package, make sure this command works
-
-# Add this in your Dockerfile for debugging purposes
-RUN ls -la /app/out/full/packages/ui/dist
-
-# RUN yarn --cwd ./out/full/apps/fe build
-# RUN yarn --cwd ./out/full/apps/web build
-# # Build both fe and web apps
-# RUN yarn build --cwd ./out/full/apps/fe
-# RUN yarn build --cwd ./out/full/apps/web
+RUN yarn --cwd ./apps/fe build
+RUN yarn --cwd ./apps/web build
 
 # 4. Runner stage for fe
 FROM base AS fe_runner
