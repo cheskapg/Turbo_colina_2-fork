@@ -14,9 +14,13 @@ RUN npm install -g pnpm
 # Copy everything to the container
 COPY . .
 
+# Create the pnpm-workspace.yaml if not present
+RUN echo "packages:\n  - 'packages/*'" > pnpm-workspace.yaml
+
 # Prune the monorepo to only include what's needed for the fe and web apps
 RUN pnpm turbo prune --scope="@repo/fe" --docker
 RUN pnpm turbo prune --scope="@repo/web" --docker
+
 
 # 2. Install dependencies for fe and web (installer stage)
 FROM node:18-alpine AS installer

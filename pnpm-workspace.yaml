@@ -1,0 +1,2 @@
+packages:
+  - 'packages/*' # Adjust this path according to your package structure
