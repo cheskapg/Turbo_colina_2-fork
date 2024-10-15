@@ -34,6 +34,8 @@ COPY --from=builder /app/out/json ./out/json
 
 # Copy the internal packages
 COPY packages ./packages
+RUN npm install --global npm@9.8.1
+
 
 # Install dependencies for fe app (including internal packages)
 RUN npm install --prefix ./out/full/apps/fe || true
