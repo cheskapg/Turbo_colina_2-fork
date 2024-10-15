@@ -1,29 +1,17 @@
-version: "3"
-
+version: '3.8'
 services:
+  fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: fe_runner
+    ports:
+      - "3000:3000"
+  
   web:
-    container_name: web
     build:
       context: .
-      dockerfile: ./apps/web/Dockerfile
-    restart: always
+      dockerfile: Dockerfile
+      target: web_runner
     ports:
-      - 3000:3000
-    networks:
-      - app_network
-  api:
-    container_name: api
-    build:
-      context: .
-      dockerfile: ./apps/fe/Dockerfile
-    restart: always
-    ports:
-      - 3001:3001
-    networks:
-      - app_network
-
-# Define a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-networks:
-  app_network:
-    external: true
+      - "4000:4000"
