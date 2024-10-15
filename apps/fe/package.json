@@ -23,7 +23,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.2.3",
     "eslint-config": "*",
-    "@repo/tailwind-config": "*",
+    "tailwind-config": "*",
     "@repo/typescript-config": "*",
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.61",
