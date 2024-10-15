@@ -1,17 +1,26 @@
 version: '3.8'
+
 services:
   fe:
     build:
       context: .
       dockerfile: Dockerfile
-      target: fe_runner
+      target: runner # Change target to fe_runner for `fe`
+      args:
+        PROJECT: fe  # Pass the PROJECT argument for `fe`
     ports:
-      - "3000:3000"
-  
+      - "3000:3000"  # Map port 3000 for `fe`
+    environment:
+      - NODE_ENV=production
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
-      target: web_runner
+      target: runner # Change target to web_runner for `web`
+      args:
+        PROJECT: web  # Pass the PROJECT argument for `web`
     ports:
-      - "4000:4000"
+      - "4000:4000"  # Map port 4000 for `web`
+    environment:
+      - NODE_ENV=production
