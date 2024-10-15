@@ -12,7 +12,7 @@ WORKDIR /app
 RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
 
 # Install tailwindcss globally
-# RUN npm install -g tailwindcss
+RUN npm install -g tailwindcss
 # Install turbo globally
 RUN yarn global add turbo
 
@@ -52,11 +52,11 @@ COPY ./packages/config-typescript ./packages/config-typescript
 COPY ./packages/ui ./packages/ui
 
 WORKDIR /app/packages/config-eslint
-RUN npm run build  
+# RUN npm run build  
 WORKDIR /app/packages/config-tailwind
-RUN npm run build  
+# RUN npm run build  
 WORKDIR /app/packages/config-typescript
-RUN npm run build  
+# RUN npm run build  
 WORKDIR /app/packages/ui
 
 # Build the UI package
