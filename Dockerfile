@@ -34,7 +34,6 @@ WORKDIR /app
 # Copy the pruned output from the builder stage
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
-COPY package.json yarn.lock ./
 RUN yarn install
 
 # Log the contents of the output directory again
