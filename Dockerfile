@@ -11,11 +11,10 @@ WORKDIR /app
 # Install yarn globally if it's not already installed
 RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
 
-# Install tailwindcss globally
-RUN npm install -g tailwindcss
-# Install turbo globally
-RUN yarn global add turbo
 
+# Install turbo globally
+# Install turbo and tailwind globally
+RUN npm install -g turbo tailwindcss
 # 2. Builder stage for both fe and web
 FROM base AS builder
 
@@ -33,7 +32,9 @@ RUN ls -la /app/out/full
 
 # Install dependencies based on pruned output
 # COPY yarn.lock ./out/full/yarn.lock
-RUN yarn install --frozen-lockfile --cwd ./out/full
+COPY package-lock.json ./out/full/package-lock.json
+RUN npm install --production --prefix ./out/full
+
 
 # 3. Installer stage for fe and web
 FROM base AS installer
@@ -53,8 +54,10 @@ WORKDIR /app/packages/ui
 RUN npm run build
 
 # Build both fe and web apps
-RUN yarn --cwd ./out/full/apps/fe build
-RUN yarn --cwd ./out/full/apps/web build
+# RUN yarn --cwd ./out/full/apps/fe build
+# RUN yarn --cwd ./out/full/apps/web build
+RUN npm run --prefix ./out/full/apps/fe build
+RUN npm run --prefix ./out/full/apps/web build
 
 # 4. Runner stage for fe
 FROM base AS fe_runner
@@ -74,7 +77,7 @@ EXPOSE 3000
 WORKDIR /app/apps/fe
 
 # Production start (change if running in dev)
-CMD yarn run start 
+CMD npm run start 
 
 # 5. Runner stage for web
 FROM base AS web_runner
@@ -94,4 +97,4 @@ EXPOSE 4000
 WORKDIR /app/apps/web
 
 # Production start (change if running in dev)
-CMD yarn run start
+CMD npm run start
