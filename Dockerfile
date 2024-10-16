@@ -26,7 +26,7 @@ RUN ls -la /app/out/full
 
 # Install dependencies based on pruned output
 COPY package-lock.json ./out/full/package-lock.json
-RUN npm install --production --prefix ./out/full
+RUN npm install --prefix ./out/full
 RUN ls -la app/out/full/
 # 3. Installer stage for fe and web
 FROM base AS installer
