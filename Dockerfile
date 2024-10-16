@@ -18,7 +18,6 @@ RUN yarn global add turbo
 
 # 2. Builder stage for both fe and web
 FROM base AS builder
-ARG nocache=1
 
 # Copy everything to the container
 COPY . .
