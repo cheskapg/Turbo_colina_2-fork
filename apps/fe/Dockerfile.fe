@@ -20,9 +20,15 @@ COPY . .
 # Prune the monorepo to include what's needed for fe
 RUN turbo prune --scope="@repo/fe" --docker
 
+# Log the contents of the output directory after pruning
+RUN echo "Contents of /app/out/full after pruning:" && ls -la /app/out/full
+
 # Install dependencies based on pruned output
 COPY package-lock.json ./out/full/package-lock.json
 RUN npm install --prefix ./out/full
+
+# Log installed modules
+RUN echo "Installed modules in /app/out/full/node_modules:" && ls -la /app/out/full/node_modules
 
 # 3. Installer stage for fe
 FROM base AS installer
@@ -46,6 +52,9 @@ COPY --from=builder /app/out/full/node_modules/next ./node_modules/next
 # Build the fe application
 RUN npm run build
 
+# Log the contents of the built application
+RUN echo "Contents of the built fe application:" && ls -la /app/apps/fe
+
 # 4. Runner stage for fe
 FROM base AS fe_runner
 
@@ -61,5 +70,8 @@ EXPOSE 3000
 WORKDIR /app/apps/fe
 RUN npm install
 
+# Log the final contents of the fe application before starting
+RUN echo "Final contents of the fe application before starting:" && ls -la /app/apps/fe
+
 # Production start
-CMD npm run dev 
+CMD npm run dev
