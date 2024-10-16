@@ -55,12 +55,10 @@ RUN npm run build
 
 # Set the working directory for fe
 WORKDIR /app/apps/fe
-RUN yarn install  # Ensure dependencies are installed
 RUN npm run build
 
 # Set the working directory for web
 WORKDIR /app/apps/web
-RUN yarn install  # Ensure dependencies are installed
 RUN npm run build
 
 # 4. Runner stage for fe
@@ -79,9 +77,10 @@ RUN ls -la ./apps/fe
 ENV PORT=3000
 EXPOSE 3000
 WORKDIR /app/apps/fe
+RUN npm install
 
 # Production start
-CMD npm run start 
+CMD npm run dev 
 
 # 5. Runner stage for web
 FROM base AS web_runner
@@ -99,6 +98,7 @@ RUN ls -la ./apps/web
 ENV PORT=4000
 EXPOSE 4000
 WORKDIR /app/apps/web
+RUN npm install
 
 # Production start
-CMD npm run start
+CMD npm run dev
