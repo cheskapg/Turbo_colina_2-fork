@@ -1,11 +1,11 @@
 version: '3.8'
 services:
   fe:
-    image: your-dockerhub-username/turborepo-colina:fe
+    image: cheskapg/turborepo-colina:fe
     ports:
       - "5000:5000" # Expose fe app on port 5000
 
   web:
-    image: your-dockerhub-username/turborepo-colina:web
+    image: cheskapg/turborepo-colina:web
     ports:
       - "4000:4000" # Expose web app on port 4000
