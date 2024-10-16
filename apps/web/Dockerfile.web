@@ -58,8 +58,6 @@ COPY --from=installer /app/out/full/apps/web ./apps/web
 # Expose the port for web
 ENV PORT=4000
 EXPOSE 4000
-WORKDIR /app/apps/web
-RUN npm install
 
-# Production start
-CMD ["npm", "start"]
+# Use standalone output
+CMD ["node", "apps/web/server.js"]
