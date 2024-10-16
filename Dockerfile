@@ -28,6 +28,9 @@ RUN ls -la /app/out/full
 COPY package-lock.json ./out/full/package-lock.json
 RUN npm install --prefix ./out/full
 
+# Check installed modules
+RUN ls -la ./out/full/node_modules
+
 # 3. Installer stage for fe and web
 FROM base AS installer
 
