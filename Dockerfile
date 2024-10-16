@@ -25,13 +25,14 @@ COPY . .
 # Prune the monorepo to include what's needed for fe and web
 RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
 RUN ls -la 
-COPY yarn.lock ./out/full/yarn.lock
+
+# COPY yarn.lock ./out/full/yarn.lock
 
 # Log the contents of the output directory
 RUN ls -la /app/out/full
 
 # Install dependencies based on pruned output
-COPY yarn.lock ./out/full/yarn.lock
+# COPY yarn.lock ./out/full/yarn.lock
 RUN yarn install --frozen-lockfile --cwd ./out/full
 
 # 3. Installer stage for fe and web
