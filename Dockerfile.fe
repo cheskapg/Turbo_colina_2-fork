@@ -30,7 +30,7 @@ WORKDIR /app
  
 # First install the dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
-RUN yarn install
+RUN npm install
 FROM base AS runner
 WORKDIR /app
 
@@ -41,6 +41,9 @@ RUN adduser --system --uid 1001 nextjs
 USER nextjs
 
 WORKDIR /app/apps/fe
+RUN ls -la /app/apps/fe/.next
+RUN ls -la /app/apps/fe/public
+
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=installer --chown=nextjs:nodejs ./.next/standalone ./
