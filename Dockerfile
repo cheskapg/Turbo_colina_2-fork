@@ -49,12 +49,18 @@ RUN ls -la ./out/full
 WORKDIR /app/packages/ui
 RUN npm run build
 
-RUN yarn --cwd ./out/full/apps/fe install
-RUN yarn --cwd ./out/full/apps/web install
+WORKDIR /app/apps/fe
+RUN yarn install
 
+WORKDIR /app/apps/web
+RUN yarn  install
+
+WORKDIR /app/apps/fe
 # Build both fe and web apps
-RUN yarn --cwd ./out/full/apps/fe build
-RUN yarn --cwd ./out/full/apps/web build
+RUN yarn build
+
+WORKDIR /app/apps/web
+RUN yarn build
 
 # 4. Runner stage for fe
 FROM base AS fe_runner
