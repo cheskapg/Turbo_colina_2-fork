@@ -29,9 +29,7 @@ WORKDIR /app
 COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 COPY --from=pruner /app/out/full/package.json ./package.json
 
-# COPY ./packages ./packages
-# COPY ../../packages ./packages
-
+COPY ./packages ./packages
 # Install dependencies with pnpm using the pruned lockfile
 # Install dependencies using npm
 RUN npm install
