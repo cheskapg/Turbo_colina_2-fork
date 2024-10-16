@@ -8,13 +8,9 @@ RUN apk update
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install yarn globally if it's not already installed
-RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
-
-
-# Install turbo globally
-# Install turbo and tailwind globally
+# Install global packages
 RUN npm install -g turbo tailwindcss
+
 # 2. Builder stage for both fe and web
 FROM base AS builder
 
@@ -25,16 +21,12 @@ COPY . .
 RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
 RUN ls -la 
 
-# COPY yarn.lock ./out/full/yarn.lock
-
 # Log the contents of the output directory
 RUN ls -la /app/out/full
 
 # Install dependencies based on pruned output
-# COPY yarn.lock ./out/full/yarn.lock
 COPY package-lock.json ./out/full/package-lock.json
 RUN npm install --production --prefix ./out/full
-
 
 # 3. Installer stage for fe and web
 FROM base AS installer
@@ -46,10 +38,10 @@ WORKDIR /app
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
 
-# Copy the ui package specifically (this is the missing part)
-COPY ./packages/ui ./packages/ui
+# Copy the ui package specifically
+COPY ./packages ./packages
 
-# Log the contents of the output directory again to verify everything is in place
+# Log contents of the ui package
 RUN ls -la ./packages/ui
 RUN ls -la ./out/full
 
@@ -57,10 +49,11 @@ RUN ls -la ./out/full
 WORKDIR /app/packages/ui
 RUN npm run build
 
+
 # Build both fe and web apps
-WORKDIR /app
 RUN npm run --prefix ./out/full/apps/fe build
 RUN npm run --prefix ./out/full/apps/web build
+
 # 4. Runner stage for fe
 FROM base AS fe_runner
 
@@ -78,7 +71,7 @@ ENV PORT=3000
 EXPOSE 3000
 WORKDIR /app/apps/fe
 
-# Production start (change if running in dev)
+# Production start
 CMD npm run start 
 
 # 5. Runner stage for web
@@ -98,5 +91,5 @@ ENV PORT=4000
 EXPOSE 4000
 WORKDIR /app/apps/web
 
-# Production start (change if running in dev)
+# Production start
 CMD npm run start
