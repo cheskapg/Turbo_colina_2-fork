@@ -56,12 +56,13 @@ RUN npm run build
 # Set the working directory for fe
 WORKDIR /app/apps/fe
 RUN yarn install  # Ensure dependencies are installed
-RUN yarn build
+RUN npm run build
 
 # Set the working directory for web
 WORKDIR /app/apps/web
 RUN yarn install  # Ensure dependencies are installed
-RUN yarn build
+RUN npm run build
+
 # 4. Runner stage for fe
 FROM base AS fe_runner
 
