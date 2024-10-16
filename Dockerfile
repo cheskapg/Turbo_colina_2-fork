@@ -38,7 +38,9 @@ COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
 
 # Install production dependencies
-RUN yarn install --production
+RUN yarn install --cwd /app
+
+RUN ls -la /app
 
 # Copy the lockfile to the fe and web directories
 COPY yarn.lock ./out/full/apps/fe/yarn.lock
