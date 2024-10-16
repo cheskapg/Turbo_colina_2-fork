@@ -59,10 +59,11 @@ COPY --from=builder /app .
 # Change to the app directory of the project being built (fe or web)
 WORKDIR /app/apps/${PROJECTPATH}
 
+ARG PORT
 
 # Set environment variables
-ENV PORT=${PORT}
-ENV NODE_ENV=production
+# ENV PORT=${PORT}
+# ENV NODE_ENV=production
 EXPOSE ${PORT}
 
 # Start the Next.js application
