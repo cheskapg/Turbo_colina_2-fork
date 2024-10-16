@@ -3,26 +3,22 @@ version: '3.8'
 services:
   fe:
     build:
-      context: .
-      dockerfile: Dockerfile
-      target: fe_runner  # Change target to fe_runner for `fe`
-      args:
-        APP: fe  # Pass the PROJECT argument for `fe`
+      context: ./apps/fe
+      dockerfile: Dockerfile.fe
+      target: fe_runner
     ports:
-      - "3000:3000"  # Map port 3000 for `fe`
+      - "3000:3000"
     environment:
       - NODE_ENV=production
-    command: yarn next dev  # Set the default command to run the `fe` app with `next` and `dev` arguments
+    command: npm run dev
 
   web:
     build:
-      context: .
-      dockerfile: Dockerfile
-      target: web_runner  # Change target to web_runner for `web`
-      args:
-        APP: web  # Pass the PROJECT argument for `web`
+      context: ./apps/web
+      dockerfile: Dockerfile.web
+      target: web_runner
     ports:
-      - "4000:4000"  # Map port 4000 for `web`
+      - "4000:4000"
     environment:
       - NODE_ENV=production
-    command: yarn dev  # Set the default command to run the `web` app with `dev` argument
+    command: npm run dev

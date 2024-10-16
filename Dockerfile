@@ -58,7 +58,7 @@ RUN npm run build
 
 # Set the working directory for fe
 WORKDIR /app/apps/fe
-RUN ls -la  .
+RUN ls -la  /app/apps/fe
 
 # Copy the next module from out/full to fe
 COPY --from=builder /app/out/full/node_modules/next ./node_modules/next
