@@ -51,8 +51,8 @@ RUN npm run build
 
 
 # Build both fe and web apps
-RUN npm run --prefix ./out/full/apps/fe build
-RUN npm run --prefix ./out/full/apps/web build
+RUN yarn --cwd ./out/full/apps/fe build
+RUN yarn --cwd ./out/full/apps/web build
 
 # 4. Runner stage for fe
 FROM base AS fe_runner
