@@ -39,8 +39,9 @@ COPY --from=builder /app/out/full ./out/full
 # Log the contents of the output directory again
 RUN ls -la ./out/full
 # Install dependencies for both apps
-RUN yarn install --frozen-lockfile --cwd ./out/full
-
+# RUN yarn install --frozen-lockfile --cwd ./out/full
+RUN yarn install --production --cwd ./out/full/apps/fe
+RUN yarn install --production --cwd ./out/full/apps/web
 # Verify contents of fe directory
 RUN ls -la ./out/full/apps/fe
 RUN ls -la ./out/full/apps/fe
@@ -85,7 +86,7 @@ RUN ls -la ./apps/fe
 # Expose the port for fe
 ENV PORT=3000
 EXPOSE 3000
-CMD ["./apps/fe/node_modules/next/dist/bin/next", "dev"]
+CMD ["./apps/fe/node_modules/next/.bin/next", "dev"]
 
 # 5. Runner stage for web
 FROM base AS web_runner
@@ -105,4 +106,4 @@ ENV PORT=4000
 EXPOSE 4000
 
 # Set the default command to run the web app
-CMD ["./apps/web/node_modules/next/dist/bin/next", "dev"]
+CMD ["./apps/web/node_modules/next/.bin/next", "dev"]
