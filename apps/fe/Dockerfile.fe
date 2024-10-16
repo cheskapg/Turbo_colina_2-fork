@@ -40,8 +40,8 @@ WORKDIR /app
 COPY --from=builder /app/out/full ./out/full
 
 # Copy the packages and apps folders
-COPY ../../packages ./packages
-COPY ../../apps ./apps
+# COPY ../../packages ./packages
+# COPY ../../apps ./apps
 
 # Set the working directory for fe
 WORKDIR /app/apps/fe
