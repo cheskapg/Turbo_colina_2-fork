@@ -1,3 +1,5 @@
+const path = require('path'); // Import path at the beginning
+
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
