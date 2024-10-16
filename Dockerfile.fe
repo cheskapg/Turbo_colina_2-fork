@@ -34,7 +34,7 @@ USER nextjs
 WORKDIR /app/apps/fe
 
 # Run the build command to generate the .next directory
-RUN yarn turbo run build
+RUN npm turbo run build
 RUN echo "Built the application."
 
 # List files in the .next directory
