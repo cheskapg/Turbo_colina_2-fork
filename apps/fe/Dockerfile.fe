@@ -40,8 +40,8 @@ WORKDIR /app
 COPY --from=builder /app/out/full ./out/full
 
 # Copy the packages and apps folders
-COPY ./packages ./packages
-COPY ./apps ./apps
+COPY ../../packages ./packages
+COPY ../../apps ./apps
 
 # Set the working directory for fe
 WORKDIR /app/apps/fe
@@ -62,7 +62,7 @@ FROM base AS fe_runner
 WORKDIR /app
 
 # Copy the built fe app from the installer stage
-COPY --from=installer /app/out/full/apps/fe ./apps/fe
+COPY --from=installer /app/apps/fe ./apps/fe
 
 # Expose the port for fe
 ENV PORT=3000
