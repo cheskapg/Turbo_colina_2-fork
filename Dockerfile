@@ -74,6 +74,8 @@ WORKDIR /app
 
 # Copy the built app from the previous stages
 COPY --from=builder-fe-web /app/apps/${APP} ./apps/${APP}
+RUN ls -la ./apps/web
+RUN ls -la ./apps/fe
 
 # Set environment variable for the port based on the app
 # Assuming fe runs on 3000 and web runs on 3001
