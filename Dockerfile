@@ -43,7 +43,7 @@ RUN turbo build --filter=${PROJECT}
 # RUN rm -rf ./**/*/src
 
 # Stage 4: Create the# Install dependencies using npm
-RUN npm install final production image
+# RUN npm install final production image
 FROM node:${NODE_VERSION}-alpine AS runner
 WORKDIR /app
 ARG PROJECTPATH
