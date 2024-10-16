@@ -1,114 +1,70 @@
-# 1. Base image for both fe and web
-FROM node:18-alpine AS base
+# Use a build argument for the Node.js version
+ARG NODE_VERSION=18.18.0
 
-# Install necessary packages
+# Stage 1: Base image setup with pnpm and turbo
+FROM node:${NODE_VERSION}-alpine AS base
 RUN apk add --no-cache libc6-compat
-RUN apk update
+# Install pnpm and turbo globally
+RUN npm install -g pnpm turbo
+# Set up pnpm store for better caching during the build
+RUN pnpm config set store-dir ~/.pnpm-store
 
-# Set the working directory inside the container
+# Stage 2: Prune workspace using pnpm
+FROM base AS pruner
+ARG PROJECT
 WORKDIR /app
 
-# Install global packages
-RUN npm install -g turbo tailwindcss 
-
-# 2. Builder stage for both fe and web
-FROM base AS builder
-
-# Copy everything to the container
+# Copy all files to the container
 COPY . .
 
-# Prune the monorepo to include what's needed for fe and web
-RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
-RUN ls -la 
+# Prune the workspace for the specific project (fe or web)
+RUN turbo prune --scope=${PROJECT} --docker
 
-# Log the contents of the output directory
-RUN ls -la /app/out/full
-
-# Install dependencies based on pruned output
-COPY package-lock.json ./out/full/package-lock.json
-RUN npm install --prefix ./out/full
-
-# Check installed modules
-RUN ls -la ./out/full/node_modules
-
-# 3. Installer stage for fe and web
-FROM base AS installer
-
-# Set the working directory
+# Stage 3: Install dependencies and build the project using pnpm
+FROM base AS builder
+ARG PROJECT
 WORKDIR /app
 
-# Copy the pruned output from the builder stage
-COPY --from=builder /app/out/json ./out/json
-COPY --from=builder /app/out/full ./out/full
+# Copy the pruned lockfile and package.json from the pruned workspace
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=pruner /app/out/package.json ./package.json
+COPY --from=pruner /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
-# Copy the pruned output from the builder stage
+# Install dependencies with pnpm using the pruned lockfile
+RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm install --frozen-lockfile
 
-# Copy the packages and apps folders
-COPY ./packages ./packages
-COPY ./apps ./apps
+# Copy the pruned source code
+COPY --from=pruner /app/out/full/ .
 
+# Build the project using turbo and pnpm
+RUN turbo build --filter=${PROJECT}
+# Prune dev dependencies to minimize the final image
+RUN pnpm prune --prod --no-optional
+RUN rm -rf ./**/*/src
 
-# Log contents of the ui package
-RUN ls -la ./packages/ui
-RUN ls -la ./out/full
-
-# Build the UI package
-WORKDIR /app/packages/ui
-RUN npm run build
-
-# Set the working directory for fe
-WORKDIR /app/apps/fe
-RUN ls -la  /app/apps/fe
-
-# Copy the next module from out/full to fe
-COPY --from=builder /app/out/full/node_modules/next ./node_modules/next
-
-RUN npm run build
-
-# Set the working directory for web
-WORKDIR /app/apps/web
-COPY --from=builder /app/out/full/node_modules/next ./node_modules/next
-
-RUN npm run build
-
-# 4. Runner stage for fe
-FROM base AS fe_runner
-
-# Set the working directory
+# Stage 4: Create the final production image
+FROM node:${NODE_VERSION}-alpine AS runner
+ARG PROJECT
 WORKDIR /app
 
-# Copy the built fe app from the installer stage
-COPY --from=installer /app/out/full/apps/fe ./apps/fe
+# Create a non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nodejs
+USER nodejs
 
-# Verify contents of fe directory
-RUN ls -la ./apps/fe
+# Copy the built files from the builder stage
+COPY --from=builder /app .
 
-# Expose the port for fe
-ENV PORT=3000
-EXPOSE 3000
-WORKDIR /app/apps/fe
-RUN npm install
+# Change to the app directory of the project being built (fe or web)
+WORKDIR /app/apps/${PROJECT}
 
-# Production start
-CMD npm run dev 
+# Set environment variables for production
+ARG PORT=3000
+ENV PORT=${PORT}
+ENV NODE_ENV=production
 
-# 5. Runner stage for web
-FROM base AS web_runner
+# Expose the port that the app will run on
+EXPOSE ${PORT}
 
-# Set the working directory
-WORKDIR /app
-
-# Copy the built web app from the installer stage
-COPY --from=installer /app/out/full/apps/web ./apps/web
-
-# Verify contents of web directory
-RUN ls -la ./apps/web
-
-# Expose the port for web
-ENV PORT=4000
-EXPOSE 4000
-WORKDIR /app/apps/web
-RUN npm install
-
-# Production start
-CMD ["npm", "start"]
+# Start the Next.js application
+CMD ["npm", "run", "start"]

@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . .
 
 # Prune the monorepo to include what's needed for fe
-RUN turbo prune --scope="@repo/fe" --docker
+RUN turbo prune --scope="fe" --docker
 RUN echo "Pruned monorepoFDD"
 
 FROM base AS installer
