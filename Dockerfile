@@ -26,7 +26,7 @@ WORKDIR /app
 
 # Copy the pruned lockfile and package.json from the pruned workspace
 # Ensure npm lockfile is copied (replace pnpm-specific ones)
-COPY --from=pruner /app/out/full/package-lock.json ./package-lock.json
+COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 COPY --from=pruner /app/out/full/package.json ./package.json
 
 # Install dependencies with pnpm using the pruned lockfile
