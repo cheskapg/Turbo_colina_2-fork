@@ -38,8 +38,12 @@ WORKDIR /app
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
 
-# Copy the ui package specifically
+# Copy the pruned output from the builder stage
+
+# Copy the packages and apps folders
 COPY ./packages ./packages
+COPY ./apps ./apps
+
 
 # Log contents of the ui package
 RUN ls -la ./packages/ui
@@ -49,19 +53,15 @@ RUN ls -la ./out/full
 WORKDIR /app/packages/ui
 RUN npm run build
 
+# Set the working directory for fe
 WORKDIR /app/apps/fe
-RUN yarn  install
+RUN yarn install  # Ensure dependencies are installed
+RUN yarn build
 
+# Set the working directory for web
 WORKDIR /app/apps/web
-RUN yarn install
-
-WORKDIR /app/apps/fe
-# Build both fe and web apps
-RUN yarn --cwd ./out/full/apps/fe build
-
-WORKDIR /app/apps/web
-RUN yarn --cwd ./out/full/apps/web build
-
+RUN yarn install  # Ensure dependencies are installed
+RUN yarn build
 # 4. Runner stage for fe
 FROM base AS fe_runner
 
