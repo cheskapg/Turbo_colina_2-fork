@@ -86,8 +86,8 @@ RUN ls -la ./apps/fe
 # Expose the port for fe
 ENV PORT=3000
 EXPOSE 3000
-CMD ["yarn", "next", "dev", "--dir", "/app/apps/fe"]
-
+WORKDIR /app/apps/fe
+CMD ["yarn", "next", "dev"]
  
 # 5. Runner stage for web
 FROM base AS web_runner
@@ -105,5 +105,5 @@ RUN ls -la ./apps/web
 # Expose the port for web
 ENV PORT=4000
 EXPOSE 4000
-
-CMD ["yarn", "next", "dev", "--dir", "/app/apps/web"]
+WORKDIR /app/apps/web
+CMD ["yarn", "next", "dev"]
