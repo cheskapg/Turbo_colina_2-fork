@@ -5,9 +5,8 @@ ARG NODE_VERSION=18.18.0
 FROM node:${NODE_VERSION}-alpine AS base
 RUN apk add --no-cache libc6-compat
 # Install pnpm and turbo globally
-RUN npm install -g pnpm turbo
+RUN npm install -g turbo
 # Set up pnpm store for better caching during the build
-RUN pnpm config set store-dir ~/.pnpm-store
 
 # Stage 2: Prune workspace using pnpm
 FROM base AS pruner
@@ -26,23 +25,24 @@ ARG PROJECT
 WORKDIR /app
 
 # Copy the pruned lockfile and package.json from the pruned workspace
-COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+# Ensure npm lockfile is copied (replace pnpm-specific ones)
+COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 COPY --from=pruner /app/out/package.json ./package.json
-COPY --from=pruner /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
 # Install dependencies with pnpm using the pruned lockfile
-RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm install --frozen-lockfile
-
+# Install dependencies using npm
+RUN npm install
 # Copy the pruned source code
 COPY --from=pruner /app/out/full/ .
 
 # Build the project using turbo and pnpm
 RUN turbo build --filter=${PROJECT}
 # Prune dev dependencies to minimize the final image
-RUN pnpm prune --prod --no-optional
-RUN rm -rf ./**/*/src
+# RUN pnpm prune --prod --no-optional
+# RUN rm -rf ./**/*/src
 
-# Stage 4: Create the final production image
+# Stage 4: Create the# Install dependencies using npm
+RUN npm install final production image
 FROM node:${NODE_VERSION}-alpine AS runner
 WORKDIR /app
 ARG PROJECTPATH
