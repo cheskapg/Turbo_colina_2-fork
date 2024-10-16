@@ -26,3 +26,7 @@ services:
     command: ["node", ".next/standalone/apps/web/server.js", "--host", "0.0.0.0"]
     ports:
       - "4000:4000"
+networks:
+  app-network:
+    driver: bridge
+    external: true
