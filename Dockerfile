@@ -1,77 +1,88 @@
-# 1. Base image for both fe and web
-FROM node:18-alpine AS base
+# 1. Builder stage
+FROM node:18-alpine AS builder
 
 # Install necessary packages
-RUN apk add --no-cache libc6-compat && \
-    npm install -g yarn --force && \
-    yarn global add turbo && \
-    npm install -g tailwindcss
+RUN apk add --no-cache libc6-compat
+RUN apk update
 
-# 2. Builder stage for both fe and web
-FROM base AS builder  
+# Set the working directory inside the container
+WORKDIR /app
+
+# Install pnpm globally for workspace management
+RUN npm install -g pnpm
 
 # Copy everything to the container
 COPY . .
 
-# Prune the monorepo to include what's needed for fe and web
-RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
+# Create the pnpm-workspace.yaml if not present
+RUN echo "packages:\n  - 'packages/*'" > pnpm-workspace.yaml
 
-# Log the contents of the output directory
+# Prune the monorepo to only include what's needed for the fe and web apps
+RUN pnpm turbo prune --scope=@repo/fe --docker --loglevel debug
+RUN pnpm turbo prune --scope=@repo/web --docker
 
 
-# 3. Installer stage for fe and web
-FROM base AS installer
+# 2. Install dependencies for fe and web (installer stage)
+FROM node:18-alpine AS installer
+
+# Install necessary packages
+RUN apk add --no-cache libc6-compat
+RUN apk update
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the pruned output from the builder stage
-COPY --from=builder /app/out/json ./out/json
+# Copy the pruned output to the installer stage
 COPY --from=builder /app/out/full ./out/full
+COPY --from=builder /app/out/json ./out/json
 
-# Install dependencies
-RUN yarn install
+# Copy the internal packages
+COPY packages ./packages
 
-# Log the contents of the output directory again
+# Install dependencies for fe app (including internal packages)
+RUN pnpm install --prefix ./out/full/apps/fe || true
 
+# Install dependencies for web app (including internal packages)
+RUN pnpm install --prefix ./out/full/apps/web || true
 
-# 4. Runner stage for fe
-FROM base AS fe_runner
+# 3. Build the fe and web apps
+FROM node:18-alpine AS builder-fe-web
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the built fe app from the installer stage
-COPY --from=installer /app/out/full/apps/fe/.next/standalone ./
-COPY --from=installer /app/out/full/apps/fe/.next/static ./apps/fe/.next/static  
-COPY --from=installer /app/out/full/apps/fe/public ./apps/fe/public
-COPY --from=installer /app/out/full/apps/fe/next.config.js .
-COPY --from=installer /app/out/full/apps/fe/package.json .  
+# Copy the source code for fe app
+COPY --from=installer /app/out/full/apps/fe ./apps/fe
 
-# Expose the port for fe
+# Copy the source code for web app
+COPY --from=installer /app/out/full/apps/web ./apps/web
+
+# Build fe app
+RUN pnpm run build --prefix ./apps/fe
+
+# Build web app
+RUN pnpm run build --prefix ./apps/web
+
+# 4. Final stage - Create a lightweight production image for both apps
+FROM node:18-alpine AS runner
+
+# Build argument to specify the app to run
+ARG APP
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built app from the previous stages
+COPY --from=builder-fe-web /app/apps/${APP} ./apps/${APP}
+
+# Set environment variable for the port based on the app
+# Assuming fe runs on 3000 and web runs on 3001
 ENV PORT=3000
-EXPOSE 3000
-RUN ls -la ./apps/fe
-# Set the default command to run the fe app
-CMD yarn turbo run start --filter=@repo/fe
+RUN if [ "${APP}" = "web" ]; then export PORT=3001; fi
 
-# 5. Runner stage for web
-FROM base AS web_runner
+# Expose the port
+EXPOSE ${PORT}
 
-# Set the working directory
-WORKDIR /app
+# Set the default command to run the specific app
+CMD ["sh", "-c", "pnpm run start --prefix ./apps/${APP} -- --port $PORT"]
 
-# Copy the built web app from the installer stage
-COPY --from=installer /app/out/full/apps/web/.next/standalone ./
-COPY --from=installer /app/out/full/apps/web/.next/static ./apps/web/.next/
-COPY --from=installer /app/out/full/apps/web/public ./apps/web/public 
-COPY --from=installer /app/out/full/apps/web/next.config.js . 
-COPY --from=installer /app/out/full/apps/web/package.json . 
-
-# Expose the port for web
-ENV PORT=4000
-EXPOSE 4000
-RUN ls -la ./apps/web
-
-# Set the default command to run the web app
-CMD yarn turbo run start --filter=@repo/web_runner
