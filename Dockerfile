@@ -84,9 +84,9 @@ COPY --from=installer /app/out/full/apps/fe ./apps/fe
 # Expose the port for fe
 ENV PORT=3000
 EXPOSE 3000
-
+RUN ls -la ./apps/fe
 # Set the default command to run the fe app
-CMD ["node", "apps/fe/server.js"]
+CMD yarn turbo run start --filter=@repo/fe
 
 # 5. Runner stage for web
 FROM base AS web_runner
@@ -103,6 +103,7 @@ COPY --from=installer /app/out/full/apps/web ./apps/web
 # Expose the port for web
 ENV PORT=4000
 EXPOSE 4000
+RUN ls -la ./apps/web
 
 # Set the default command to run the web app
-CMD ["node", "apps/web/server.js"]
+CMD yarn turbo run start --filter=@repo/web_runner
