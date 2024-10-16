@@ -24,6 +24,8 @@ COPY . .
 
 # Prune the monorepo to include what's needed for fe and web
 RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
+RUN ls -la 
+COPY yarn.lock ./out/full/yarn.lock
 
 # Log the contents of the output directory
 RUN ls -la /app/out/full
