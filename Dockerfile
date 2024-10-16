@@ -1,6 +1,5 @@
 # 1. Base image for both fe and web
 FROM node:18-alpine AS base
-ARG nocache=1
 
 # Install necessary packages
 RUN apk add --no-cache libc6-compat
@@ -19,6 +18,7 @@ RUN yarn global add turbo
 
 # 2. Builder stage for both fe and web
 FROM base AS builder
+ARG nocache=1
 
 # Copy everything to the container
 COPY . .
