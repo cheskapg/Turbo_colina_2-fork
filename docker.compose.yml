@@ -2,14 +2,26 @@ version: '3.8'
 services:
   fe:
     image: cheskapg/turborepo-colina:fe
+    build:
+      context: ./apps/fe
+      args:
+        PROJECTPATH: fe
+        PORT: 5000
     environment:
       - PORT=5000
+    command: ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]  # <-- Add host flag
     ports:
-      - "5000:5000"  # Map host port to container port
+      - "5000:5000"
 
   web:
     image: cheskapg/turborepo-colina:web
+    build:
+      context: ./apps/web
+      args:
+        PROJECTPATH: web
+        PORT: 4000
     environment:
       - PORT=4000
+    command: ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]  # <-- Add host flag
     ports:
-      - "4000:4000"  # Map host port to container port
+      - "4000:4000"

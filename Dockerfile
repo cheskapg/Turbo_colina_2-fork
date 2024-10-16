@@ -67,4 +67,8 @@ ARG PORT
 EXPOSE ${PORT}
 
 # Start the Next.js application
-CMD ["npm", "run", "start"]
+# CMD ["npm", "run", "start"]
+CMD ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]
+
+
+
