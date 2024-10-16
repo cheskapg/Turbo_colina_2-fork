@@ -17,10 +17,10 @@ jobs:
 
       - name: Build and push FE image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:fe --build-arg PROJECT=fe -f ./Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:fe --build-arg PROJECT=fe --build-arg PORT=5000 -f ./Dockerfile .
           docker push ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:fe
 
       - name: Build and push WEB image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:web --build-arg PROJECT=web -f ./Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:web --build-arg PROJECT=web --build-arg PORT=4000 -f ./Dockerfile .
           docker push ${{ secrets.DOCKER_USERNAME }}/turborepo-colina:web

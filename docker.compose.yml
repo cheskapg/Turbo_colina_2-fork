@@ -1,24 +1,11 @@
 version: '3.8'
-
 services:
   fe:
-    build:
-      context: ./apps/fe
-      dockerfile: Dockerfile.fe
-      target: fe_runner
+    image: your-dockerhub-username/turborepo-colina:fe
     ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-    command: npm run dev
+      - "5000:5000" # Expose fe app on port 5000
 
   web:
-    build:
-      context: ./apps/web
-      dockerfile: Dockerfile.web
-      target: web_runner
+    image: your-dockerhub-username/turborepo-colina:web
     ports:
-      - "4000:4000"
-    environment:
-      - NODE_ENV=production
-    command: npm run dev
+      - "4000:4000" # Expose web app on port 4000
