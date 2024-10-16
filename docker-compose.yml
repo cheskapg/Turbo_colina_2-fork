@@ -19,7 +19,7 @@ services:
     image: cheskapg/turborepo-colina:web
     build:
       context: ./apps/web
-      dockerfile: ../../Dockerfile  # Relative path from ./apps/fe to the root Dockerfile
+      dockerfile: ../../Dockerfile 
       
       args:
         PROJECTPATH: web
