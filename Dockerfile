@@ -44,8 +44,8 @@ RUN rm -rf ./**/*/src
 
 # Stage 4: Create the final production image
 FROM node:${NODE_VERSION}-alpine AS runner
-ARG PROJECT
 WORKDIR /app
+ARG PROJECTPATH
 
 # Create a non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
@@ -56,7 +56,7 @@ USER nodejs
 COPY --from=builder /app .
 
 # Change to the app directory of the project being built (fe or web)
-WORKDIR /app/apps/${PROJECT}
+WORKDIR /app/apps/${PROJECTPATH}
 
 
 # Set environment variables
