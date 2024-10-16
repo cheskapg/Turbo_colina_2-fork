@@ -87,7 +87,7 @@ ENV PORT=3000
 EXPOSE 3000
 WORKDIR /app/apps/fe
 # Set the default command to run the fe app
-CMD turbo run dev 
+CMD npm run dev
 
 # 5. Runner stage for web
 FROM base AS web_runner
@@ -107,4 +107,4 @@ ENV PORT=4000
 EXPOSE 4000
 WORKDIR /app/apps/web
 # Set the default command to run the web app
-CMD turbo run dev 
+CMD npm run dev
