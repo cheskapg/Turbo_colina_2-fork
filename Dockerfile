@@ -9,7 +9,7 @@ RUN apk update
 WORKDIR /app
 
 # Install global packages
-RUN npm install -g turbo tailwindcss
+RUN npm install -g turbo tailwindcss 
 
 # 2. Builder stage for both fe and web
 FROM base AS builder
@@ -27,7 +27,7 @@ RUN ls -la /app/out/full
 # Install dependencies based on pruned output
 COPY package-lock.json ./out/full/package-lock.json
 RUN npm install --production --prefix ./out/full
-
+RUN ls -la app/out/full/
 # 3. Installer stage for fe and web
 FROM base AS installer
 
@@ -55,6 +55,8 @@ RUN npm run build
 
 # Set the working directory for fe
 WORKDIR /app/apps/fe
+RUN ls -la  .
+
 RUN npm run build
 
 # Set the working directory for web
@@ -101,4 +103,4 @@ WORKDIR /app/apps/web
 RUN npm install
 
 # Production start
-CMD npm run dev
+CMD ["npm", "start"]
