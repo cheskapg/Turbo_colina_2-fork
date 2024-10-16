@@ -22,7 +22,7 @@ COPY ./packages ./packages
 RUN turbo prune --scope="@repo/fe" --docker
 
 # Install dependencies based on pruned output
-COPY ./out/full/package-lock.json ./out/full/package-lock.json
+# COPY ./out/full/package-lock.json ./out/full/package-lock.json
 RUN npm install --prefix ./out/full
 
 # 3. Installer stage for fe
