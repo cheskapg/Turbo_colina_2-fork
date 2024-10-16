@@ -1,5 +1,5 @@
-# 1. Builder stage
-FROM node:18-alpine AS builder
+# 1. Base image for both fe and web
+FROM node:18-alpine AS base
 
 # Install necessary packages
 RUN apk add --no-cache libc6-compat
@@ -8,83 +8,103 @@ RUN apk update
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install pnpm globally for workspace management
-RUN npm install -g pnpm
+# Install yarn globally if it's not already installed
+RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
+
+# Install tailwindcss globally
+RUN npm install -g tailwindcss
+# Install turbo globally
+RUN yarn global add turbo
+
+# 2. Builder stage for both fe and web
+FROM base AS builder
 
 # Copy everything to the container
 COPY . .
 
-# Create the pnpm-workspace.yaml if not present
-RUN echo "packages:\n  - 'packages/*'" > pnpm-workspace.yaml
-
-# Prune the monorepo to only include what's needed for the fe and web apps
-RUN pnpm turbo prune --scope=@repo/fe --docker --loglevel debug
-RUN pnpm turbo prune --scope=@repo/web --docker
-
-
-# 2. Install dependencies for fe and web (installer stage)
-FROM node:18-alpine AS installer
-
-# Install necessary packages
-RUN apk add --no-cache libc6-compat
-RUN apk update
+# Prune the monorepo to include what's needed for fe and web
+RUN turbo prune --scope="@repo/fe" --scope="@repo/web" --docker
+# Log the contents of the output directory
+RUN ls -la /app/out/full
+# 3. Installer stage for fe and web
+FROM base AS installer
 
 # Set the working directory
 WORKDIR /app
+COPY ./packages ./packages
 
-# Copy the pruned output to the installer stage
-COPY --from=builder /app/out/full ./out/full
+# Copy the pruned output from the builder stage
 COPY --from=builder /app/out/json ./out/json
+COPY --from=builder /app/out/full ./out/full
+# Log the contents of the output directory again
+RUN ls -la ./out/full
+# Install dependencies for both apps
+RUN yarn install --frozen-lockfile --cwd ./out/full
 
-# Copy the internal packages
-COPY packages ./packages
+# Verify contents of fe directory
+RUN ls -la ./out/full/apps/fe
+RUN ls -la ./out/full/apps/fe
 
-# Install dependencies for fe app (including internal packages)
-RUN pnpm install --prefix ./out/full/apps/fe || true
 
-# Install dependencies for web app (including internal packages)
-RUN pnpm install --prefix ./out/full/apps/web || true
+# Copy the UI package
 
-# 3. Build the fe and web apps
-FROM node:18-alpine AS builder-fe-web
+
+
+# RUN npm run build  
+WORKDIR /app/packages/ui
+# Build the UI package
+RUN npm run build  
+# Build both fe and web apps
+RUN yarn --cwd ./out/full/apps/fe build
+RUN yarn --cwd ./out/full/apps/web build
+# Copy the UI package and build it
+# COPY ./packages/ui ./packages/ui
+# WORKDIR ./packages/ui
+# RUN npm run build  # Builds the UI package, make sure this command works
+
+
+# RUN yarn --cwd ./out/full/apps/fe build
+# RUN yarn --cwd ./out/full/apps/web build
+# # Build both fe and web apps
+# RUN yarn build --cwd ./out/full/apps/fe
+# RUN yarn build --cwd ./out/full/apps/web
+
+# 4. Runner stage for fe
+FROM base AS fe_runner
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the source code for fe app
+# Copy the built fe app from the installer stage
+# COPY --from=installer /app/out/full/apps/fe/.next/standalone ./
+# COPY --from=installer /app/out/full/apps/fe/.next/static ./apps/fe/.next/static
+# COPY --from=installer /app/out/full/apps/fe/public ./apps/fe/public
 COPY --from=installer /app/out/full/apps/fe ./apps/fe
-
-# Copy the source code for web app
-COPY --from=installer /app/out/full/apps/web ./apps/web
-
-# Build fe app
-RUN pnpm run build --prefix ./apps/fe
-
-# Build web app
-RUN pnpm run build --prefix ./apps/web
-
-# 4. Final stage - Create a lightweight production image for both apps
-FROM node:18-alpine AS runner
-
-# Build argument to specify the app to run
-ARG APP
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the built app from the previous stages
-COPY --from=builder-fe-web /app/apps/${APP} ./apps/${APP}
-RUN ls -la ./apps/web
 RUN ls -la ./apps/fe
 
-# Set environment variable for the port based on the app
-# Assuming fe runs on 3000 and web runs on 3001
+# Expose the port for fe
 ENV PORT=3000
-RUN if [ "${APP}" = "web" ]; then export PORT=3001; fi
+EXPOSE 3000
 
-# Expose the port
-EXPOSE ${PORT}
+# Set the default command to run the fe app
+CMD yarn turbo run start --filter=./apps/fe
 
-# Set the default command to run the specific app
-CMD ["sh", "-c", "pnpm run start --prefix ./apps/${APP} -- --port $PORT"]
+# 5. Runner stage for web
+FROM base AS web_runner
 
+# Set the working directory
+WORKDIR /app
+
+# Copy the built web app from the installer stage
+# COPY --from=installer /app/out/full/apps/web/.next/standalone ./
+# COPY --from=installer /app/out/full/apps/web/.next/static ./apps/web/.next/static
+# COPY --from=installer /app/out/full/apps/web/public ./apps/web/public
+COPY --from=installer /app/out/full/apps/web ./apps/web
+RUN ls -la ./apps/web
+
+# Expose the port for web
+ENV PORT=4000
+EXPOSE 4000
+
+# Set the default command to run the web app
+CMD yarn turbo run start --filter=./apps/web
