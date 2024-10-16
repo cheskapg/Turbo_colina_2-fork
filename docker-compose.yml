@@ -3,9 +3,7 @@ services:
     image: cheskapg/turborepo-colina:fe
     build:
       context: ./apps/fe
-      dockerfile: ../../Dockerfile  # Relative path from ./apps/fe to the root Dockerfile
-      args:        
-        PROJECT: "@repo/fe"
+      args:
         PROJECTPATH: fe
         PORT: 5000
     environment:
@@ -20,10 +18,8 @@ services:
     image: cheskapg/turborepo-colina:web
     build:
       context: ./apps/web
-      dockerfile: ../../Dockerfile 
       
       args:
-        PROJECT: "@repo/web"
         PROJECTPATH: web
         PORT: 4000
     environment:
