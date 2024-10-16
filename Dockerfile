@@ -63,12 +63,12 @@ ARG PORT
 
 # Set environment variables
 # ENV PORT=${PORT}
-# ENV NODE_ENV=production
+ENV NODE_ENV=production
 EXPOSE ${PORT}
 
 # Start the Next.js application
-# CMD ["npm", "run", "start"]
-CMD ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]
+CMD ["npm", "run", "start"]
+# CMD ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]
 
 
 
