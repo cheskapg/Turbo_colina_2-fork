@@ -42,6 +42,9 @@ USER nextjs
 
 WORKDIR /app/apps/fe
 
+# Run the build command to generate the .next directory
+RUN yarn turbo run build
+
 # List files in the .next directory
 RUN echo "Contents of /app/apps/fe/.next:" && ls -la /app/apps/fe/.next
 
@@ -49,7 +52,6 @@ RUN echo "Contents of /app/apps/fe/.next:" && ls -la /app/apps/fe/.next
 RUN echo "Contents of /app/apps/fe/public:" && ls -la /app/apps/fe/public
 
 # Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=installer --chown=nextjs:nodejs /app/apps/fe/.next/standalone ./
 COPY --from=installer --chown=nextjs:nodejs /app/apps/fe/.next/static ./apps/web/.next/static
 COPY --from=installer --chown=nextjs:nodejs /app/apps/fe/public ./apps/web/public
