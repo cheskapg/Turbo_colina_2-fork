@@ -5,7 +5,7 @@ ARG NODE_VERSION=18.18.0
 FROM node:${NODE_VERSION}-alpine AS base
 RUN apk add --no-cache libc6-compat
 # Install pnpm and turbo globally
-RUN npm install -g turbo
+RUN npm install -g turbo tailwindcss
 # Set up pnpm store for better caching during the build
 
 # Stage 2: Prune workspace using pnpm
@@ -29,6 +29,7 @@ WORKDIR /app
 COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 COPY --from=pruner /app/out/full/package.json ./package.json
 
+COPY ./packages ./packages
 # Install dependencies with pnpm using the pruned lockfile
 # Install dependencies using npm
 RUN npm install
