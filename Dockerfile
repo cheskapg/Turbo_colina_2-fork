@@ -29,23 +29,19 @@ RUN ls -la /app/out/full
 # 3. Installer stage for fe and web
 FROM base AS installer
 
+# Set the working directory
 WORKDIR /app
 COPY ./packages ./packages
 
 # Copy the pruned output from the builder stage
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
-
-# Install production dependencies
-RUN yarn install --production --cwd /app
-
-# Generate the yarn.lock file
-RUN yarn install --cwd /app
-
-# Copy the yarn.lock file to the correct location
-COPY /app/yarn.lock ./out/full/apps/fe/yarn.lock
-COPY /app/yarn.lock ./out/full/apps/web/yarn.lock
-
+# Log the contents of the output directory again
+RUN ls -la ./out/full
+# Install dependencies for both apps
+# RUN yarn install --frozen-lockfile --cwd ./out/full
+RUN yarn install --production --cwd ./out/full/apps/fe
+RUN yarn install --production --cwd ./out/full/apps/web
 # Verify contents of fe directory
 RUN ls -la ./out/full/apps/fe
 RUN ls -la ./out/full/apps/fe
