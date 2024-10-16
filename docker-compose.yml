@@ -3,7 +3,7 @@ services:
     image: cheskapg/turborepo-colina:fe
     build:
       context: ./apps/fe
-      dockerfile: ./Dockerfile  # Ensure this path is correct for fe
+      dockerfile: ../../Dockerfile  # Relative path from ./apps/fe to the root Dockerfile
       args:
         PROJECTPATH: fe
         PORT: 5000
@@ -19,7 +19,7 @@ services:
     image: cheskapg/turborepo-colina:web
     build:
       context: ./apps/web
-      dockerfile: ./Dockerfile  # Ensure this path is correct for web
+      dockerfile: ../../Dockerfile  # Relative path from ./apps/fe to the root Dockerfile
       
       args:
         PROJECTPATH: web
