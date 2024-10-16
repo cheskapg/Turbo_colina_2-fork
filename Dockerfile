@@ -3,7 +3,7 @@ ARG NODE_VERSION=18.18.0
 
 # Stage 1: Base image setup with pnpm and turbo
 FROM node:${NODE_VERSION}-alpine AS base
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat curl
 # Install pnpm and turbo globally
 RUN npm install -g turbo tailwindcss
 # Set up pnpm store for better caching during the build
