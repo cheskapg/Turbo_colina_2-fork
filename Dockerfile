@@ -46,7 +46,11 @@ WORKDIR /app
 COPY --from=builder /app/out/json ./out/json
 COPY --from=builder /app/out/full ./out/full
 
-# Log the contents of the output directory again
+# Copy the ui package specifically (this is the missing part)
+COPY ./packages/ui ./packages/ui
+
+# Log the contents of the output directory again to verify everything is in place
+RUN ls -la ./packages/ui
 RUN ls -la ./out/full
 
 # Build the UI package
@@ -54,11 +58,9 @@ WORKDIR /app/packages/ui
 RUN npm run build
 
 # Build both fe and web apps
-# RUN yarn --cwd ./out/full/apps/fe build
-# RUN yarn --cwd ./out/full/apps/web build
+WORKDIR /app
 RUN npm run --prefix ./out/full/apps/fe build
 RUN npm run --prefix ./out/full/apps/web build
-
 # 4. Runner stage for fe
 FROM base AS fe_runner
 
