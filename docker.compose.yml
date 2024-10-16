@@ -2,10 +2,14 @@ version: '3.8'
 services:
   fe:
     image: cheskapg/turborepo-colina:fe
+    environment:
+      - PORT=5000
     ports:
-      - "5000:5000" # Expose fe app on port 5000
+      - "5000:5000"  # Map host port to container port
 
   web:
     image: cheskapg/turborepo-colina:web
+    environment:
+      - PORT=4000
     ports:
-      - "4000:4000" # Expose web app on port 4000
+      - "4000:4000"  # Map host port to container port
