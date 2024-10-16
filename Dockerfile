@@ -56,6 +56,11 @@ USER nodejs
 # Copy the built files from the builder stage
 COPY --from=builder /app .
 
+# Use PROJECTPATH variable to copy the built server.js from the standalone output
+COPY --from=builder /app/apps/${PROJECTPATH}/.next/standalone/apps/${PROJECTPATH}/server.js /app/apps/${PROJECTPATH}/server.js
+COPY --from=builder /app/apps/${PROJECTPATH}/.next/static /app/apps/${PROJECTPATH}/.next/static
+COPY --from=builder /app/apps/${PROJECTPATH}/public /app/apps/${PROJECTPATH}/public
+
 # Change to the app directory of the project being built (fe or web)
 WORKDIR /app/apps/${PROJECTPATH}
 
@@ -67,7 +72,10 @@ ENV NODE_ENV=production
 EXPOSE ${PORT}
 
 # Start the Next.js application
-CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "${PORT}"]
+
+# Start the Next.js application using the custom server.js path
+CMD ["node", "apps/${PROJECTPATH}/server.js", "--host", "0.0.0.0", "--p
+# CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "${PORT}"]
 
 # CMD ["npm", "run", "start"]
 # CMD ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]
