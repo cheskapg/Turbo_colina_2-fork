@@ -1,40 +1,31 @@
 # Base image
-FROM node:18 AS base  
+FROM node:18 AS base
+
 # Install Turbo CLI globally
+RUN npm install -g turbo
 
 # Builder stage
 FROM base AS builder
-# RUN apk update
-# RUN apk add --no-cache libc6-compat
 WORKDIR /app
-RUN npm install -g turbo
 
-# Copy root package.json and package-lock.json
+# Copy the entire project, including package.json and package-lock.json
 COPY . .
-RUN echo "Copied root"
-
-
-
-# # Run Turbo to build the entire monorepo
-# RUN yarn turbo run build
-# RUN echo "Turbo build completed"
 
 # Prune the monorepo to include what's needed for fe
 RUN turbo prune --scope="@repo/fe" --docker
-RUN echo "Pruned monorepo"
+RUN echo "Pruned monorepoFDD"
 
 FROM base AS installer
-# RUN apk update
-# RUN apk add --no-cache libc6-compat
 WORKDIR /app
- 
+
 # First install the dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
 RUN npm install
+
+# Runner stage
 FROM base AS runner
 WORKDIR /app
 
- 
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -44,6 +35,7 @@ WORKDIR /app/apps/fe
 
 # Run the build command to generate the .next directory
 RUN yarn turbo run build
+RUN echo "Built the application."
 
 # List files in the .next directory
 RUN echo "Contents of /app/apps/fe/.next:" && ls -la /app/apps/fe/.next
@@ -57,30 +49,9 @@ COPY --from=installer --chown=nextjs:nodejs /app/apps/fe/.next/static ./apps/web
 COPY --from=installer --chown=nextjs:nodejs /app/apps/fe/public ./apps/web/public
 
 # List the files in the target directories to confirm the copy was successful
-RUN echo "Contents of the copied .next/standalone directory:" && ls -la /app/apps/fe/.next/standalone
+RUN echo "Contents of the copied .next/standalone directory:" && ls -la ./standalone
 RUN echo "Contents of the copied static directory:" && ls -la ./apps/web/.next/static
 RUN echo "Contents of the copied public directory:" && ls -la ./apps/web/public
 
 WORKDIR /app
-CMD ["node", "apps/web/server.js"]
-# # Copy the pruned output from the builder stage
-# COPY --from=builder /app/out/full ./out/full
-# RUN echo "Copied pruned output. Contents of out/full: $(ls -la ./out/full)"
-
-# # Copy FE specific files
-# WORKDIR /app/apps/fe
-# COPY apps/fe/package.json ./
-# RUN echo "Copied FE package.json. Contents: $(cat ./package.json)"
-
-# COPY --from=builder /app/out/full/node_modules ./node_modules
-# RUN echo "Copied node_modules for FE. Contents: $(ls -la ./node_modules)"
-
-# # Build the application using Yarn and Turbo
-# RUN yarn turbo run build --filter=@repo/fe...
-# RUN echo "FE build completed"
-
-# # Final stage for running the application
-# FROM base AS runner
-# WORKDIR /app/apps/fe
-# COPY --from=installer /app/apps/fe .
-# CMD ["node", "server.js"]  # Adjust to your entry point
+CMD ["node", "apps/fe/server.js"]
