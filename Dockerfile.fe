@@ -1,6 +1,5 @@
 # Base image
-FROM node:14 AS base
-
+FROM node:18 AS base  
 # Install Turbo CLI globally
 RUN npm install -g turbo
 
