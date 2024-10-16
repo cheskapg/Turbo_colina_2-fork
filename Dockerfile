@@ -19,7 +19,7 @@ COPY . .
 
 # Prune the workspace for the specific project (fe or web)
 RUN turbo prune --scope=${PROJECT} --docker
-RUN ls /out
+RUN ls -la /app/out/full
 # Stage 3: Install dependencies and build the project using pnpm
 FROM base AS builder
 ARG PROJECT
