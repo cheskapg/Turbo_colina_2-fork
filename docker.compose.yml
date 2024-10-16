@@ -7,7 +7,10 @@ services:
       args:
         PROJECTPATH: fe
         PORT: 5000
+        
     environment:
+      - HOST=0.0.0.0  # Add this line
+
       - PORT=5000
     command: ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]  # <-- Add host flag
     ports:
@@ -21,6 +24,8 @@ services:
         PROJECTPATH: web
         PORT: 4000
     environment:
+      - HOST=0.0.0.0  # Add this line
+
       - PORT=4000
     command: ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]  # <-- Add host flag
     ports:
