@@ -67,7 +67,9 @@ ENV NODE_ENV=production
 EXPOSE ${PORT}
 
 # Start the Next.js application
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "${PORT}"]
+
+# CMD ["npm", "run", "start"]
 # CMD ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]
 
 

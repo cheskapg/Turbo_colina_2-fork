@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   fe:
     image: cheskapg/turborepo-colina:fe
@@ -7,12 +6,10 @@ services:
       args:
         PROJECTPATH: fe
         PORT: 5000
-        
     environment:
-      - HOST=0.0.0.0  # Add this line
-
+      - HOST=0.0.0.0
       - PORT=5000
-    command: ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]  # <-- Add host flag
+    command: ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]  # Host flag added
     ports:
       - "5000:5000"
 
@@ -24,9 +21,8 @@ services:
         PROJECTPATH: web
         PORT: 4000
     environment:
-      - HOST=0.0.0.0  # Add this line
-
+      - HOST=0.0.0.0
       - PORT=4000
-    command: ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]  # <-- Add host flag
+    command: ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]  # Host flag added
     ports:
       - "4000:4000"
