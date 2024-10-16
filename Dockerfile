@@ -45,13 +45,17 @@ COPY ./packages ./packages
 RUN ls -la ./packages/ui
 RUN ls -la ./out/full
 
-# Install dependencies for the frontend and web projects specifically
+# Build the UI package
+WORKDIR /app/packages/ui
+RUN npm run build
+
 RUN yarn --cwd ./out/full/apps/fe install
 RUN yarn --cwd ./out/full/apps/web install
 
 # Build both fe and web apps
 RUN yarn --cwd ./out/full/apps/fe build
 RUN yarn --cwd ./out/full/apps/web build
+
 # 4. Runner stage for fe
 FROM base AS fe_runner
 
