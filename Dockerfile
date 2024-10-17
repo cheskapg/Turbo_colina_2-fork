@@ -67,7 +67,7 @@ WORKDIR /app/apps/${PROJECTPATH}
 ARG PORT
 
 # Set environment variables
-# ENV PORT=${PORT}
+ENV PORT=${PORT}
 ENV NODE_ENV=production
 EXPOSE ${PORT}
 
@@ -75,6 +75,7 @@ EXPOSE ${PORT}
 
 # Start the Next.js application using the custom server.js path
 CMD ["node", "/app/apps/${PROJECTPATH}/server.js", "--host", "0.0.0.0", "--port", "${PORT}"]
+RUN echo "Running on port: ${PORT}"
 # CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "${PORT}"]
 #twerk
 # CMD ["npm", "run", "start"]
