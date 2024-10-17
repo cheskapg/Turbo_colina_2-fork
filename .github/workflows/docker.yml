@@ -3,7 +3,7 @@ name: Build and Push Docker Images
 on:
   push:
     branches:
-      - test-docker-3  # Change this to your default branch
+      - test-micro--2  # Change this to your default branch
 
 jobs:
   build-and-push:
