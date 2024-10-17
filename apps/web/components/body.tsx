@@ -1,17 +1,19 @@
+//apps/web/components/body.tsx
 "use client";
-
 import Button from "@repo/ui/button";
-import React from "react";
-import { Page as FEService } from "@repo/fe";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@repo/ui/theme-context";
+import dynamic from 'next/dynamic';
 
 function Body(): React.ReactElement {
   const { theme, setTheme } = useTheme();
-
+  const [FEService, setFEService] = useState<React.ComponentType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [pageContent, setPageContent] = useState<string | null>(null);
   const toggleTheme = (): void => {
     let newTheme: "dark" | "light" | "dim";
 
-    // Simplified theme toggling logic
     switch (theme) {
       case "light":
         newTheme = "dim";
@@ -23,8 +25,7 @@ function Body(): React.ReactElement {
         newTheme = "light";
     }
 
-    setTheme(newTheme); // Update the theme state
-    // Manually update local storage to trigger storage event
+    setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
   };
 
@@ -34,11 +35,38 @@ function Body(): React.ReactElement {
     return "light";
   };
 
+  const loadPageContent = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/'); // Adjust the URL based on your server setup
+      if (!response.ok) {
+        throw new Error('Failed to fetch page content');
+      }
+      const html = await response.text();
+      setPageContent(html);
+    } catch (error:any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPageContent();
+  }, []);
+
+
+
+  useEffect(() => {
+    loadPageContent();
+  }, []);
+
   return (
     <main className="flex flex-col items-center justify-between min-h-screen p-24">
-      <h1>web</h1>
-      <Button className="bg-red-500 text-white" text="web button" />
-      <FEService />
+      <h1>Web Application</h1>
+      <Button className="bg-red-500 text-white" text="Web button" />
+      {loading && <p>Loading FEService...</p>}
+      {error && <p>{error}</p>}
+      {pageContent && <div dangerouslySetInnerHTML={{ __html: pageContent }} />}
       <button onClick={toggleTheme} type="button">
         Toggle to {getNextThemeLabel()} mode
       </button>
