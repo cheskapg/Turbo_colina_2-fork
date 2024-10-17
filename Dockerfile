@@ -74,8 +74,8 @@ EXPOSE ${PORT}
 # Start the Next.js application
 
 # Start the Next.js application using the custom server.js path
-CMD ["node", "/server.js", "--host", "0.0.0.0", "--p", "${PORT}"]
-# CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "${PORT}"]
+# CMD ["node", "/app/apps/${PROJECTPATH}/server.js/server.js", "--host", "0.0.0.0", "--p", "${PORT}"]
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "${PORT}"]
 #twerk
 # CMD ["npm", "run", "start"]
 # CMD ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]
