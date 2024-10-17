@@ -41,6 +41,7 @@ RUN turbo build --filter=${PROJECT}
 # Prune dev dependencies to minimize the final image
 # RUN pnpm prune --prod --no-optional
 # RUN rm -rf ./**/*/src
+# RUN node copy-static-files.js
 
 # Stage 4: Create the# Install dependencies using npm
 # RUN npm install final production image
@@ -65,20 +66,20 @@ COPY --from=builder /app/apps/${PROJECTPATH}/public /app/apps/${PROJECTPATH}/pub
 WORKDIR /app/apps/${PROJECTPATH}
 
 ARG PORT
-
+# twerk
 # Set environment variables
 ENV PORT=${PORT}
 ENV NODE_ENV=production
 EXPOSE ${PORT}
-
+# RUN  npm update
 # Start the Next.js application
 
 # Start the Next.js application using the custom server.js path
-CMD ["node", "/app/apps/${PROJECTPATH}/server.js"]
+# CMD ["sh", "-c", "node /app/apps/${PROJECTPATH}/server.js"]
 
 # CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "${PORT}"]
 #twerk
-# CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start"]
 # CMD ["node", ".next/standalone/server.js", "--host", "0.0.0.0"]
 
 
