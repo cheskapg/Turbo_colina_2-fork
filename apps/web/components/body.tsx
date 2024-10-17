@@ -3,11 +3,9 @@
 import Button from "@repo/ui/button";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@repo/ui/theme-context";
-import dynamic from 'next/dynamic';
 
 function Body(): React.ReactElement {
   const { theme, setTheme } = useTheme();
-  const [FEService, setFEService] = useState<React.ComponentType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageContent, setPageContent] = useState<string | null>(null);
@@ -37,7 +35,7 @@ function Body(): React.ReactElement {
 
   const loadPageContent = async () => {
     try {
-      const response = await fetch('http://localhost:3000/'); // Adjust the URL based on your server setup
+      const response = await fetch('http://localhost:5000/'); // Adjust the URL based on your server setup
       if (!response.ok) {
         throw new Error('Failed to fetch page content');
       }
@@ -55,10 +53,6 @@ function Body(): React.ReactElement {
   }, []);
 
 
-
-  useEffect(() => {
-    loadPageContent();
-  }, []);
 
   return (
     <main className="flex flex-col items-center justify-between min-h-screen p-24">

@@ -1,16 +1,17 @@
+// fe/src/app/page.tsx
 import { ThemeProvider } from "@repo/ui/theme-context";
 import Body from "../../component/body";
 
-const Page = (): JSX.Element => {
+export default function Page() {
   return (
-    <ThemeProvider>
-      <div>
-        <h1>Hello from FE!</h1>
-        <Body />
-        <p>This is the content you should see.</p>
-      </div>
-    </ThemeProvider>
-  );
-};
+    <div>
+        <div>
+          <h1>Hello from FE!</h1>
+          <Body /> 
+          <p>This is the content you should see.</p>
+        </div>
 
-export default Page; // Ensure this is a default export
+    </div>
+  );
+}
+
